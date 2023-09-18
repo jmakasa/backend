@@ -1,0 +1,598 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*Page Title Banner*/
+.page_banner{}
+
+
+
+/*.breadcrumb-item+.breadcrumb-item::before {
+  content: ">";
+  vertical-align:top;
+  color: #408080;
+  font-size:35px;
+  line-height:18px;
+}*/
+
+/*--2020 breadcrumb--*/
+.breadcrumb { font-size: 12px; background-color: transparent;font-style:italic;}
+.breadcrumb .breadcrumb-item + .breadcrumb-item::before {content: none;}
+.breadcrumb .breadcrumb-item.active {color: #000;}
+.breadcrumb .breadcrumb-item a {color: #000;}
+
+
+/*--2020 Filter Bar--*/
+.filter-product{margin:20px auto;}
+.filter-title{float: left; font-size: 1.5rem;line-height: 2; font-style: italic;}
+.filter-product .nav {
+    padding:0 20px;
+}
+.filter-product .nav li a { 
+    margin:5px;
+    font-size:12px; 
+    background: ;
+    transition-duration: 0.4s;
+    border: 1px solid #ddd;
+    border-radius: 10em;
+    text-align: center;
+    color: #000;
+    line-height: 2;
+}
+.filter-product .nav a:hover { 
+    background:;
+    border: 1px solid #F94212;
+    color:#F94212; 
+}
+.filter-product .nav .active { 
+    border: 1px solid #F94212;
+    background:transparent;
+    color:#F94212;
+}
+
+/*@keyframes winanim {
+    0%{opacity:0;transform:scale3d(.3,.3,.3)}
+    50%{opacity:1}    
+}*/
+
+
+/*--2020 Product List--*/
+.productlist .Portfolio {
+    position: relative;
+    border-right: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    float: left;
+    transition-duration: 0.4s;
+    animation: winanim 0.5s ;
+    -webkit-backface-visibility:visible;
+    backface-visibility:visible;
+    padding: 0px 0px 20px 0px;
+}
+.productlist .Portfolio:hover {/* box-shadow: 0 12px 16px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);*/}
+.productlist .Portfolio img {width: 100%;height: auto;}
+.productlist .pro-name {
+    padding: 5px;
+    text-align: center;
+    font-size: 90%;
+    color:#000;
+}
+.productlist .pro-title {
+    padding: 0px 10px;
+    text-align: center;
+    font-size: 100%;
+    color:#000;
+}
+
+/*2020 顏色ICON*/
+.productlist .pro-color{padding-top: 10px; justify-content: center; display: flex; flex-direction:row ;}
+.productlist .pro-color .square-black{
+    width: 5%;
+    background: black;
+    height: 0;
+    border: 1px solid #ddd;
+    padding-bottom:5%;
+    margin-right: 5px;
+}
+.productlist .pro-color .square-white{
+    width: 5%;
+    background: white;
+    height: 0;
+    border: 1px solid #ddd;
+    padding-bottom: 5%;
+    margin-right: 5px;
+}
+.productlist .pro-color .square-blue{
+    width: 5%;
+    background: blue;
+    height: 0;
+    border: 1px solid #ddd;
+    padding-bottom: 5%;
+    margin-right: 5px;
+}
+.productlist .pro-color .square-green{
+    width: 5%;
+    background: green;
+    height: 0;
+    border: 1px solid #ddd;
+    padding-bottom: 5%;
+    margin-right: 5px;
+}
+.productlist .pro-color .square-pink{
+    width: 5%;
+    background: pink;
+    height: 0;
+    border: 1px solid #ddd;
+    padding-bottom: 5%;
+    margin-right: 5px;
+}
+
+.productlist .pro-code {
+    padding: 10px;
+    text-align: center;
+    font-size: 70%;
+    color:#999; 
+}
+
+.productlist{/*margin:0px 0px;*/}
+
+/*2022 卡片DIV等高*/
+.productlist .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.productlist .row > [class*='col-'] {
+     display: flex;
+     flex-direction: column;
+}
+
+/*NEW 標籤*/
+.product_new_icon{
+    position: absolute; /*設為絕對定位(absolute)*/
+    font-weight: bold;
+    top: 0px;
+    left: 0;
+    /*right : 0px; 右邊上面都設0，則出現在右上方*/
+    color: #fff;
+    display: block;
+    background: #ff008a;
+    width: 60px;
+    height: 25px;
+    text-align: center;
+    font-style:italic;
+    z-index: 5;
+}
+/*UPCOMING 標籤*/
+.product_upcoming_icon{
+    position: absolute; /*設為絕對定位(absolute)*/
+    font-weight: bold;
+    top: 0px;
+    left: 0;
+    /*right : 0px; 右邊上面都設0，則出現在右上方*/
+    color: #fff;
+    display: block;
+    background: #1cd77d;
+    width: 100px;
+    height: 25px;
+    text-align: center;
+    font-style:italic;
+    z-index: 5;
+}
+/*LEGACY 標籤*/
+.product_legacy_icon{
+    position: absolute; /*設為絕對定位(absolute)*/
+    font-weight: bold;
+    top: 170px;
+    right : 0px; /*右邊上面都設0，則出現在右上方*/
+    color: #fff;
+    display: block;
+    background: #585858;
+    width: 100px;
+    height: 25px;
+    text-align: center;
+    font-style:italic;
+    z-index: 5;
+}
+
+
+/*產品介紹頁-圖片預覽*/
+
+
+/*.carousel-control { color: #0284b8; text-align: center; text-shadow: none; font-size: 30px; width: 30px; height: 30px; line-height: 20px; top: 23%; }
+
+.carousel-control:hover, .carousel-control:focus, .carousel-control:active { color: #333; }
+
+.carousel-caption, .carousel-control .fa { font: normal normal normal 30px/26px FontAwesome; }
+.carousel-control { background-color: rgba(0, 0, 0, 0); bottom: auto; font-size: 20px; left: 0; position: absolute; top: 30%; width: auto; }
+
+.carousel-control.right, .carousel-control.left { background-color: rgba(0, 0, 0, 0); background-image: none; }*/
+
+
+
+/*product.list.aircooler.php*/
+
+.card {
+    margin-bottom: 15px;
+}
+
+.category_title {
+    margin-top: px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #444444;
+    text-transform:uppercase;
+    word-wrap:break-word;
+}
+
+/*.icon-action {
+    margin-top: -25px;
+    float: right;
+    font-size: 60%;
+    color: #444444;
+}*/
+
+.custom-control {
+    position: relative;
+    display: block;
+    min-height: 1.5rem;
+    /*padding-left: 2.5rem;*/
+    }
+
+
+.custom-control-label {
+    position: relative;
+    display:inline;
+    margin-bottom: 0;
+    vertical-align: top;
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+.badge {
+    display: inline-block;
+    padding: .25em .4em;
+    padding-right: 0.4em;
+    padding-left: 0.4em;
+    font-size: 70%;
+    font-weight: 300;
+
+}
+
+
+/*test*/
+.sidebar {}
+
+.filter-header > a {
+  display: block;
+  position: relative;
+  font-size: 60%;
+  color: #444444;
+  text-decoration:none;
+
+}
+.filter-header > a:after {
+  content: "\f078"; /* fa-chevron-down */
+  font-family: 'FontAwesome';
+  position: absolute;
+  right: 0;
+  top: 0;
+
+}
+.filter-header > a[aria-expanded="true"]:after {
+  content: "\f077"; /* fa-chevron-up */
+}
+
+
+.filter-content {padding-bottom: 20px;}
+
+.showmore, .showmore:hover, .showmore:visited, .showmore:focus {
+    font-size: 0.8rem;
+    padding-left: 1.5rem;
+    color: #999;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: -10px;
+}
+.side [aria-expanded="false"] > .expanded,
+.side [aria-expanded="true"] > .collapsed {
+  display: none;  
+}
+
+/*#collapse2 label.collapse[aria-expanded="false"] {
+    display: block;
+    height: 40px !important;
+    overflow: hidden;
+}
+
+#collapse2 label.collapsing[aria-expanded="false"] {
+    height: 40px !important;
+}*/
+
+/*#collapse2 a.showmore {
+  color: #999;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+#collapse2 a.showmore:after  {
+    content: '+ Show More';
+}
+
+#collapse2 a.showmore[aria-expanded="true"]:after {
+    content: '- Show Less';
+}*/
+
+
+
+
+/*2020 測試側邊篩選單*/
+#sidebar-wrapper {
+  min-height: 100vh;
+  margin-left: -15rem;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+  padding: 0.875rem 1.25rem;
+  font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+  width: 15rem;
+}
+
+/*#page-content-wrapper {
+  min-width: 100vw;
+}*/
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+    /*z-index: 50;*/
+    /*position:fixed;*/
+  }
+
+/*  #page-content-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+*/
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+  }
+}
+
+
+/*====2022 product.list.cpucooler: side_filter =====*/
+.sidebar .pro_type {border-bottom: 1px solid #eeeeee;padding:0 0 1em 0;}
+.sidebar .pro_type ul {font-size: 14px;}
+.sidebar .pro_type ul li a { padding: 0 0 5px 0; display: block; text-decoration: none; color: #000;}
+.sidebar .pro_type ul li a:hover { color:#C8102E;text-decoration: underline; font-weight: bold;} 
+.filter-item { border-bottom: 1px solid #eeeeee; padding: 1em 0;}
+.filter-item .filter-header{position: relative;}
+.filter-item .filter-header h6{
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #444444;
+    text-transform:uppercase;
+    word-wrap:break-word;
+}
+.filter-item .form-check-label { font-size: 0.9rem;  color: #666666;}
+.filter-item .form-check-input:checked { background-color: #C8102E; border-color: #C8102E; }
+.filter-item .filter-content { padding-bottom: 20px;}
+.filter-item .form-check { margin-bottom: .2rem;}
+.filter-item [aria-expanded="false"] > .expanded,
+.filter-item [aria-expanded="true"] > .collapsed {
+  display: none;  
+}
+
+
+
+/*==== Legacy List Page =====*/
+
+.has-search .form-control {
+    padding-left: 2.375rem;
+    height: 35px;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.3rem;
+    height: 2.3rem;
+    line-height: 2.3rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  color: #000;
+  text-decoration: none;
+  background-color: #fff;
+  border: 0px solid #dee2e6;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  font-size: 1.2rem;
+}
+.page-link:hover {
+ z-index:2;
+ color:#C8102E;
+ background-color: transparent;
+ border-color:transparent;
+ text-decoration:underline;
+}
+.page-link:focus {
+ z-index:3;
+ color:#C8102E;
+ background-color:transparent;
+ outline:0;
+ box-shadow:0 0 0 0rem rgba(13,110,253,.25);
+ font-weight: bold;
+}
+
+/*==== ContactUs =====*/
+
+.contactus-page{
+  margin-top: 50px;
+}
+
+.block1 {
+  /*height: 600px;*/
+  background-color: #E8E8E8;  
+}
+.empty-block {
+  height: 230px;
+}
+.block2 {
+  background-color: #F8F8F8;
+}
+.block3 {
+  height: 330px;
+  background-color: #F8F8F8;  
+}
+.block4 {
+  height: 330px;
+  background-color: #E8E8E8;  
+}
+
+.uk-contactus {
+  padding: 30px 0px 0px 30px;
+}
+.tw-contactus {
+  margin-left: 0px;  margin-right: -15px; padding-bottom: 15px;
+}
+.br-contactus {
+  padding: 30px 0px 0px 30px;margin-left: 15px;margin-right: -35px;
+}
+.cn-contactus {
+  margin-right: -35px;margin-left: 35px;
+}
+
+@media (max-width: 767px) {
+  .block1 { margin-bottom:15px;}
+  .empty-block { height: 300px;}
+  .tw-contactus { margin-left:-15px; margin-right:-15px;}
+  .br-contactus { margin-left:0px; margin-bottom:15px;}
+  .cn-contactus { margin-left:-15px;  margin-right:-15px;}
+  }
+
+
+
+
+
+/*====2022 Productlist Card Set =====*/
+
+
+/****BROWSE BY CATEGORY****/
+.browse_cate_area .item a {text-decoration: none;color: #000000;}
+.headline_title { font-size: 14px;margin-top: 10px;  margin-bottom: 0px; font-weight: bold;}
+.headline_short { font-size: 0.8rem;color: #000000;}
+.browse_cate_area .item p {padding:0 5px 0 5px; }
+.browse_cate_area .item:hover{opacity: 0.8;}
+/*.browse_cate_area .item img {border-radius: 50%; }*/
+
+
+/* productlist-card (Slideshow container) */
+.NEWproductlist-container {
+  position: relative;
+  background: #fff;
+}
+
+/* productlist (Slides) */
+.NEWProductList {
+  /*display: none;*/
+  text-align: center;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -30px;
+  padding: 16px;
+  color: #888;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  position: absolute;
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+  color: white;
+}
+
+/* The dot/bullet/indicator container */
+.NEWProListIcon-container {
+    /*text-align: center;
+    padding: 20px;
+    background: #ddd;*/
+}
+
+/* The dots/bullets/indicators */
+.NEWProListIcon {
+  cursor: pointer;
+  margin: 0 2px;
+  border: 1px solid #cccccc;
+  width: 45px;
+/*  height: 45px;
+  background-color: #bbb;
+  display: inline-block;
+  transition: background-color 0.6s ease;*/
+}
+
+/* Add a background color to the active dot/circle */
+.active, .NEWProListIcon:hover {
+  /*background-color: #717171;*/
+}
+
+.NEWProListIcon >img {padding:0px; }
+.productlistarea{  }
+.productliscard{ text-align: center; margin-bottom: 15px;border-radius: 0;border: 0px solid rgba(0,0,0,.125);}
+.productliscard .pro-name {
+    padding: 5px 0px;;
+    font-size: 1rem;
+    color:#000;
+    text-decoration: none;
+    font-weight: bold;
+}
+.productliscard .pro-title {
+    padding: 5px 0px;
+    font-size: 1rem;
+    color:#000;
+}
+.productliscard .pro-code {
+    padding: 5px 0px;;
+    font-size: 0.8rem ;
+    color:#999; 
+}
+.productliscard a {text-decoration: none;color: #000;font-weight: bold;}
+.productliscard a:hover {text-decoration: none;color: #000;font-weight: bold;}
+.productliscard img {}
+.productliscard img:first-child:hover{/*-webkit-transform: scale(0.9); transform: scale(0.9); opacity: 1;*/}
+.card-body {padding: 0.5rem 0.5rem;}
+.hide{display:none;}
+
+
+/*==== Productlist Card Set End =====*/
+

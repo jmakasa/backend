@@ -1,0 +1,842 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*GallerySet*/
+  .gallery-area .slider-nav .slick-slide { cursor: pointer; }
+  .gallery-area .slick-slide.is-active h3 {  color: #c00;  background-color: #fff}
+  .gallery-area .slick-next {right: 0px;}
+  /*.slick-prev {left: 0px;}*/
+  @media screen and (max-width:500px)
+  {
+  .gallery-area .slider-nav{ display: none;}
+  }
+  .gallery-area .slick-prev {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: -8%;
+    left: 20px ;
+    display: block;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    -webkit-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    cursor: pointer;
+    color: transparent;
+    border: none;
+    outline: none;
+    background: transparent;
+    transform: rotate(90deg);
+}
+  .gallery-area .slick-next {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 103%;
+    left: 20px ;
+    display: block;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    -webkit-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    cursor: pointer;
+    color: transparent;
+    border: none;
+    outline: none;
+    background: transparent;
+    transform: rotate(90deg);
+}
+.gallery-area .slider-nav { /*padding-top: 30px;*/ }
+.gallery-area .slider-single{ display: block;cursor:pointer; /*max-width:600px;width: 100%*/ }
+.gallery-area .slick-vertical .slick-slide img {border-radius: ;}
+.gallery-area .slick-vertical .slick-slide {
+    display: block;
+    height: auto;
+    border: 2px solid transparent;
+    margin: 5px 0;
+    opacity: 0.8;
+}
+.gallery-area .slick-vertical .slick-slide:hover {border: 0px solid #C8102E;opacity: 1;}
+
+.gallery-area .slick-prev:before,
+.gallery-area .slick-next:before
+{
+    font-family: 'slick';
+    font-size: 20px;
+    line-height: 1;
+    opacity: .75;
+    color: #C8102E;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.gallery-area .slick-prev:before
+{
+    content: '\276E';
+}
+.gallery-area .slick-next:before
+{
+    content: '\276F';
+}
+
+/*--Gallery LightBox 開始-->*/
+/* The Modal (background) */
+.gallerylightbox .modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Modal Content */
+.gallerylightbox .modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  width: 100%;
+  max-width: 770px;
+}
+
+/* The Close Button */
+.gallerylightbox .close {
+  color: white;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.gallerylightbox .close:hover,
+.gallerylightbox .close:focus {
+  color: #999;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Hide the slides by default */
+.gallerylightbox .mySlides {
+  /*display: none;*/
+}
+
+/* Next & previous buttons */
+.gallerylightbox .prev,
+.gallerylightbox .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  color: #999;
+  font-weight: bold;
+  font-size: 30px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
+}
+
+/* Position the "next button" to the right */
+.gallerylightbox .next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.gallerylightbox .prev:hover,
+.gallerylightbox .next:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #fff;
+  border: 1 solid #000;
+}
+
+/* Number text (1/4 etc) */
+.gallerylightbox .numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* Caption text */
+.gallerylightbox .caption-container {
+  text-align: center;
+  background-color: rgba(0,0,0,0.9);
+  padding: 5px 16px;
+  color: #fff;
+}
+
+.gallerylightbox img.demo {
+  opacity: 0.6;
+}
+
+.gallerylightbox .active,
+.gallerylightbox .demo:hover {
+  opacity: 1;
+}
+
+/*img.hover-shadow {
+  transition: 0.3s;
+}*/
+
+/*.hover-shadow:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}*/
+
+/*--Gallery LightBox 結束-->*/
+
+/*--右上簡介-->*/
+.product_intro_area{padding-top:1rem;/*margin-left: 50px;*/}
+.row_product_data_name{ font-size:2rem;margin-bottom: 0px;color: #C8102E;}
+.row_product_data_title{ font-size:1.2rem;line-height: 1.5;color: #666;font-weight: bold; }
+.row_product_data_long_description{ font-size:0.8rem;color: #666;line-height: 1.8rem;}
+.row_product_data_partno { font-size: 0.7rem;color:#999; font-weight: bold;}
+@media screen and (max-width:767px)
+{
+    .product_intro_area{margin-left: 0px;}
+}
+
+
+/*--右下小圖清單-->*/
+.smalllistpic .rounded-circle{border: 1px solid #ffffff;}
+.smalllistpic .rounded-circle:hover{border: 1px solid #C8102E;}
+.smalllistpic .btn-outline-danger {
+  color: #C8102E;
+  border-color: #C8102E;
+}
+.smalllistpic .btn-outline-danger:hover {
+ color:#fff;
+ background-color:#C8102E;
+ border-color:#C8102E;
+}
+
+/*video-btn 燈箱*/
+.video-lightbox{margin-top: 20px;}
+.video-lightbox .btn{padding: .275rem .75rem;}
+.video-lightbox .modal-dialog {max-width: 700px; margin: 0px auto;}
+.video-lightbox .modal-body { position:relative; padding:0px;}
+.video-lightbox .close {
+  position:absolute;
+  right:5px;
+  top:0px;
+  z-index:999;
+  font-size:2rem;
+  font-weight: normal;
+  color:#fff;
+  opacity:1;
+  text-shadow: 0 0px 0 #ffffff;
+}
+
+
+/*--總頁籤TAB-->*/
+#pro-tabs .tabs_bar .nav-link {
+  display: block;
+  padding: 1rem 1rem;
+}
+
+#pro-tabs .tabs_bar .nav-tabs .nav-link:focus, #pro-tabs .tabs_bar .nav-tabs .nav-link:hover { 
+  color: #C8102E;
+  background-color: transparent;
+  border-color: transparent transparent #C8102E;
+  border-bottom: 3px solid #C8102E !important;
+  
+}
+
+#pro-tabs .tabs_bar .nav-tabs .nav-item.show .nav-link, #pro-tabs .tabs_bar .nav-tabs .nav-link.active {
+  color: #C8102E;
+  background-color: transparent;
+  border-color: transparent transparent #C8102E;
+  border-bottom: 3px solid #C8102E !important;
+  font-weight: bold;
+}
+
+#pro-tabs .tabs_bar .nav-tabs .nav-link {
+  border: 0px solid #fff;
+  border-top-left-radius: 0rem;
+  border-top-right-radius: 0rem;
+  color: #000;
+  text-transform:uppercase;
+}
+#pro-tabs .tabs_bar .nav-tabs {
+  border-bottom: 0px solid #FFDFDF;
+  border-top: 0px solid #FFDFDF;
+  background-color: #FEE;
+}
+
+
+/*頁籤TAB滾動黏滯定位*/
+#pro-tabs .fixed-top {
+  position: sticky;
+  top: 75px;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  overflow:visible;
+}
+
+
+/*手機滑軌*/
+@media screen and (max-width:767px)
+{
+#pro-tabs .fixed-top {
+  position: sticky;
+  top: 68px;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  overflow:visible;
+}
+#pro-tabs .tabs_bar .scrollmenu {
+  /*background-color: #333;*/
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  scrollbar-color: ;
+}
+
+#pro-tabs .tabs_bar .scrollmenu li {
+  display: inline-block;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+#pro-tabs .scrollmenu li:hover {background-color:transparent;}
+}
+
+/*--頁籤01-產品特色介紹-->*/
+.product-item{padding-top: 30px;padding-bottom: 30px;}
+.product-item img{max-width:100%;height:auto;} 
+.product-item p{ line-height: 1.8; }
+
+.old-page{padding: 0;margin: 0 auto;display: flex;justify-content: center;background-color: #000;}
+/*.old-page table {width: 600%;align-content: center;display: flex;justify-content: center;}*/
+
+@media screen and (max-width:470px) {
+
+    .product-item{ min-height: 100vh }
+    .pic{ padding: 30px 0; }
+    /*.product-item h2{text-align: center;}*/
+    .old-page{overflow-x: scroll;overflow-y: hidden;padding: 0;display: inline;}
+
+}
+
+.product-item:nth-child(1){ background: #fff; }
+.product-item:nth-child(2){ background: #0042ff; color: #fff;}
+.product-item:nth-child(3){ background: #fff; }
+.product-item:nth-child(4){ background: #000; color: #fff; }
+
+
+/*--頁籤02-產品規格-->*/
+.spectab_content .container{background-color: rgb(250, 250, 250);padding-bottom: 80px;}
+.spectab_content .accordion{padding-top: 50px;margin:0 50px;}
+.spectab_content .accordion-button{font-size: 1.2rem;font-weight: bold;background-color: transparent;}
+.spectab_content .accordion-button:not(.collapsed) {
+  color: #C8102E;
+  background-color: #f2f2f2;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+}
+.spectab_content .accordion-button::after{content: "\002b";background-image: none;-webkit-transform: rotate(180deg); transform: rotate(180deg);}
+.spectab_content .accordion-button:not(.collapsed)::after {
+    content: "\2212";
+    background-image: none;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+.spectab_content .accordion .accordion-item {padding: 0;border-bottom: 1px dashed #adb5bd;background-color: transparent;}
+.spectab_content .table > :not(caption) > * > * {
+  padding: 0.7rem 1.8rem;}
+.spectab_content.accordion-header{border-bottom: 1px dashed #adb5bd;}
+.table-hover>tbody>tr:hover {
+/* background-color: rgba(255,255,255,0.1);*/
+}
+
+/*--配件燈箱開始-->*/
+.contentlightbox .lightbox {
+  /* Default to hidden */
+  /*display: none;*/
+
+  /* Overlay entire screen */
+  position: fixed;
+  /*z-index: 500;*/
+  top: -100%;
+  left: 0;
+  /*right: 0;*/
+  /*bottom: 0;*/
+  width: 100%;
+  background: rgba(0,0,0,.7);
+  opacity: 0;
+  /* A bit of padding around image */
+  /*padding: 1em;*/
+
+  /* Translucent background */
+  background: rgba(0, 0, 0, 0.8);
+  -webkit-transition: opacity .5s ease-in-out;
+  -moz-transition: opacity .5s ease-in-out;
+  -o-transition: opacity .5s ease-in-out;
+  transition: opacity .5s ease-in-out;
+  overflow: hidden;
+}
+
+/* Unhide the lightbox when it's the target */
+/*.contentlightbox .lightbox:target {
+  display: block;
+
+}*/
+
+.contentlightbox .lightbox img {
+  /* Full width and height */
+  display: block;
+  margin: 0 auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 0%;
+  max-width: 0%;
+  /*border: 3px solid white;*/
+  /*box-shadow: 0px 0px 8px rgba(0,0,0,.3);*/
+  box-sizing: border-box;
+
+  /* Size and position background image */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-top:100px;
+  -webkit-transition: .5s ease-in-out;
+  -moz-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+}
+
+.contentlightbox .lightbox:target {
+  opacity: 1;
+  top: 0;
+  bottom: 0;
+  overflow:scroll;
+}
+
+.contentlightbox .lightbox:target img {
+  max-height: 100%;
+  max-width: 100%;
+}
+.contentlightbox a.lightbox-close {
+display: block;
+width:50px;
+height:50px;
+box-sizing: border-box;
+background: white;
+color: black;
+text-decoration: none;
+position: absolute;
+top: -80px;
+right: 0;
+-webkit-transition: .5s ease-in-out;
+-moz-transition: .5s ease-in-out;
+-o-transition: .5s ease-in-out;
+transition: .5s ease-in-out;
+}
+.contentlightbox a.lightbox-close:before {
+content: "X";
+display: block;
+height: 30px;
+width: 100px;
+background: black;
+position: absolute;
+left: 26px;
+top:10px;
+-webkit-transform:rotate(45deg);
+-moz-transform:rotate(45deg);
+-o-transform:rotate(45deg);
+transform:rotate(45deg);
+}
+.contentlightbox a.lightbox-close:after {
+content: "X";
+display: block;
+height: 30px;
+width: 100px;
+background: black;
+position: absolute;
+left: 26px;
+top:10px;
+-webkit-transform:rotate(-45deg);
+-moz-transform:rotate(-45deg);
+-o-transform:rotate(-45deg);
+transform:rotate(-45deg);
+}
+.contentlightbox .lightbox:target a.lightbox-close {
+top: 0;
+}
+/*--配件燈箱結束-->*/
+
+@media screen and (max-width:767px)
+{
+    .spectab_content .accordion{padding-top: 30px;margin:0 ; font-size: 0.8rem;}
+    .spectab_content .accordion-button{font-size: 1rem;font-weight: bold;background-color: transparent;}
+    
+}
+
+
+/*.uilist{
+    list-style: none;
+    display: grid;
+    padding:0;
+}
+.list{padding:5px;display: grid;list-style: none;}
+.list img{
+  padding: 1px ;
+  margin-left:auto !important;
+
+}
+
+.colA {
+  margin: 0px;
+  background: tomato;
+  max-height: ;
+  color: white;
+}
+
+.photosmall{max-width:100%;border: 2px solid #dddddd;height: auto;}
+.photo{max-width:100%;border: 2px solid #000000;}
+
+ .bx-wrapper {
+  margin-top: 50px !important;
+  box-shadow: 0px #ccc;
+  border: 0px solid #fff;
+  background: transparent;
+}
+.bx-controls a {
+  transform: rotate(90deg);
+  left: 30% !important;
+  top: 0 !important;
+  bottom: 0!important;
+  right: 0 !important;
+}
+.bx-controls .bx-prev {
+  top: -30px !important;
+}
+.bx-controls .bx-next {
+  top: 400px !important;
+} */
+
+
+/*@media (max-width: 700px) {
+.colA {
+  margin: 0px;
+  background: tomato;
+  max-height: ;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  order:2;
+}
+ .uilist{
+    list-style: none;
+    display: inline-flex;
+  }
+  
+.photosmall{max-width:100%;border: 2px solid #dddddd;height: auto;}
+.photo{max-width:100%;border: 2px solid #000000;}
+ 
+
+.bx-wrapper{margin-top: 0px !important;max-width:75%;box-shadow: 0px #ccc;border: 0px solid #fff;margin: 0 auto 0px;background: transparent;}
+.bx-controls a{transform: rotate(0deg); 
+  left: -10% !important; 
+  top: 10 !important; 
+  bottom: 0!important; 
+  right: 0 !important;}
+.bx-controls .bx-next{left: 100% !important;}
+.bx-wrapper .bx-controls-direction a {
+    position: absolute;
+    top: 50%;
+    margin-top: -16px;
+    outline: 0;
+    width: 32px;
+    height: 32px;
+    text-indent: -9999px;
+    z-index: 9999;
+}  
+}*/
+/*----------------------------*/
+/* .ff_faqs {
+     margin:20px auto;
+     max-width:800px;
+     padding:50px;
+}
+ .ff_faq_header :first-child {
+     margin-top:0;
+}
+ .ff_faq_header {
+     position:relative;
+     display:block;
+     width:100%;
+     background:transparent;
+     border-top:1px solid #e5eff5;
+     border-bottom:1px solid #e5eff5;
+     border-radius:0;
+     padding:20px;
+     font-size:20px;
+     text-decoration:none;
+     color:#333;
+     margin-top:-1px;
+     text-align:left;
+     font-weight:500;
+}
+ .ff_faq_header:hover, .ff_faq_header:focus {
+     border-top:1px solid #e5eff5;
+     border-bottom:1px solid #e5eff5;
+     color:#333;
+     text-decoration:none;
+}
+ .ff_faq_header[aria-expanded="true"] {
+     background:#fff;
+     border-bottom:none;
+     border-right:1px solid #e5eff5;
+     border-left:1px solid #e5eff5;
+}
+ .ff_faq_header[aria-expanded="false"]:hover {
+     color:red;
+}
+ .ff_faq_header[aria-expanded="true"]:after {
+     display:block;
+     content: "\f106";
+     position:absolute;
+     right:20px;
+     top:13px;
+     font-family:FontAwesome;
+     font-size:30px;
+}
+ .ff_faq_header[aria-expanded="false"]:after {
+     display:block;
+     content: "\f107";
+     position:absolute;
+     right:20px;
+     top:15px;
+     font-family:FontAwesome;
+     font-size:30px;
+}
+ .ff_faq_item {
+     background:#fff;
+     padding:0 20px 40px 20px;
+     border-right:1px solid #e5eff5;
+     border-left:1px solid #e5eff5;
+     color:#999;
+     font-size:17px;
+}*/
+/*--------------------------------------*/
+.accordion .card {
+    background: none;
+    border: none;
+}
+.accordion .card .faq-header {
+    background: none;
+    border: none;
+    padding: .4rem 1rem;
+    /*font-family: "Roboto", sans-serif;*/
+}
+.accordion .faq-header h2 span {
+    float: left;
+    margin-top: 10px;
+}
+.accordion .faq-header .btn {
+    color: #2f2f31;
+    font-size: 1.04rem;
+    text-align: left;
+    position: relative;
+    font-weight: 500;
+    padding-left: 2rem;
+  }
+/*.faq-header:hover, .faq-header:focus {
+    border-top:1px solid #e5eff5;
+    border-bottom:1px solid #e5eff5;
+    color:#333;
+    text-decoration:none;
+}*/
+.accordion .faq-header .btn[aria-expanded="true"] {
+     background:;
+     color: #F94212;
+}
+ /*faq滑過*/
+.accordion .faq-header .btn[aria-expanded="false"]:hover {
+    color: #F94212;
+}
+ /*faq攤開*/
+.accordion .faq-header .btn[aria-expanded="true"]:after {
+     transform: rotate(180deg);
+     content: "\f13a";
+     display:block;
+     position:absolute;
+     font-family:FontAwesome;
+     left: 10px;
+     top:5px;
+}
+/*faq闔上*/
+.accordion .faq-header .btn[aria-expanded="false"]:after {
+     transform: rotate(0deg);
+     content: "\f13a";
+     display:block;
+     position:absolute;
+     font-family:FontAwesome;
+     left: 10px;
+     top:5px;
+}
+.accordion .faq-answer {
+    color: #324353;
+    padding: 0.5rem 3rem;
+  }
+
+
+/*--頁籤03-評論-->*/
+.reviews_content .card-body p{ font-size: 0.8rem;color: #333;}
+.reviews_content a {opacity: 1;text-decoration:none;color: #000}
+.reviews_content a .card:hover{opacity: 1;text-decoration:none;background-color: #fefefe;border: 1px solid #C8102E;}
+/*.reviews_content a div img:hover{opacity: 0.8;}*/
+@media screen and (max-width:767px)
+{
+    
+}
+
+/*--頁籤04-支持-垂直選單-->*/
+.verticalTab_content .nav-pills .nav-link {
+  padding: 20px;
+/*  width: 300px;
+  height: 100%;*/
+  border: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #fff;
+  color: #222;
+  transition: all 0.3s;
+  border-radius: 0px;
+  background: 0 0;
+}
+.verticalTab_content .nav-pills .nav-link:hover {
+  color: #C8102E;
+  background-color: #eee;
+  border-left: 3px solid #eee !important;
+}
+.verticalTab_content .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  color: #000;
+  background-color: #eee;
+  border-left: 3px solid #C8102E !important;
+}
+
+@media screen and (max-width:767px)
+{
+    .verticalTab_content .nav-pills .nav-link span {display: none;}
+    .verticalTab_content .nav-pills .nav-link i {margin-right: 0;}
+    
+}
+
+/*--頁籤04-支持-下載&問與答-->*/
+.faq_content .accordion-button:not(.collapsed) {
+  color: #C8102E;
+  background-color: #f2f2f2;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+}
+.faq_content .accordion-button::after{content: "\002b";background-image: none;-webkit-transform: rotate(180deg); transform: rotate(180deg);}
+.faq_content .accordion-button:not(.collapsed)::after {
+    content: "\2212";
+    background-image: none;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+.faq_content .accordion-item .accordion-body {color: #333;padding-left: 2.5rem;}
+
+
+
+/*通用連結*/
+.ak_alinkline { color:#C8102E;text-decoration: underline;}
+.ak_alinkline:hover { color:#C8102E;text-decoration: underline;}
+
+
+
+
+
+/*.nav-link .circle-icon {
+  height: 50px;
+  width: 50px;
+  border-radius: 50px;
+  border: 2px solid #777;
+  background: #fff;
+  color: #999;
+  font-size: 22px;
+}
+*/
+
+
+
+/*相關產品*/
+.carousel .carousel-control {
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  top: 50%;
+  background: none;
+}
+.carousel-control i {
+  font-size: 36px;
+  line-height: 42px;
+  position: absolute;
+  display: inline-block;
+  color: rgba(0, 0, 0, 0.8);
+  text-shadow: 0 0px 0px #e6e6e6, 0 0 0 #000;
+}
+/*.carousel .carousel-indicators {
+  bottom: -40px;
+}會影響首頁輪播*/
+.carousel-indicators li, .carousel-indicators li.active {
+  width: 10px;
+  height: 10px;
+  margin: 1px 3px;
+  border-radius: 50%;
+}
+.carousel-indicators li { 
+  background: #999;
+  border-color: transparent;
+  box-shadow: inset 0 2px 1px rgba(0,0,0,0.2);
+  border: 0px solid transparent;
+}
+.carousel-indicators li.active {  
+  background: #555;   
+  box-shadow: inset 0 2px 1px rgba(0,0,0,0.2);
+}
+
+@media screen and (max-width:470px){.carousel-control{display: none;}}
+
+/*相關產品-Bootstrap Multi Slide Carousel-advances one slide at a time*/
+
+@media (max-width: 767px) {
+    .carousel-inner .carousel-item > div {
+        display: none;
+    }
+    .carousel-inner .carousel-item > div:first-child {
+        display: flex;
+    }
+}
+
+.carousel-inner .carousel-item.active,
+.carousel-inner .carousel-item-next,
+.carousel-inner .carousel-item-prev {
+    display: flex;
+}
+
+
+

@@ -1,0 +1,486 @@
+<?php
+
+namespace App\Http\Controllers;
+
+//use App\Models\Category;
+use App\Http\Controllers\ProductBoxesController;
+use App\Models\Products;
+use App\Models\ProdSpec;
+use App\Models\WebProducts;
+use App\Models\ProdlistBoxes;
+use App\Models\Images;
+use App\Models\Downloads;
+use App\Models\Category;
+use App\Models\Tags;
+use App\Models\Blogs;
+use App\Models\Keywords;
+use App\Models\ProductReviews;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+use App\Services\FileService;
+use Illuminate\Validation\ValidationException;
+
+class ProductsController extends Controller
+{
+    public function __construct()
+    {
+        //$this->middleware('auth', ['except' => ['apiProductLists']]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $products = WebProducts::all();
+        return view('admin.products.index', compact('products'));
+    }
+    public function create(Request $request)
+    {
+        // tags
+        //   $tags = Tags::whereStatus("Active")->get();
+        // categorys
+        $categories = Category::whereStatus("Active")->get();
+        // keywords
+        //    $keywords = Keywords::whereStatus("Active")->get();
+        // blogs
+        //   $blogs = Blogs::whereStatus("Active")->get();
+        // products
+        // blogs
+        $products = WebProducts::whereStatus("Active")->get();
+
+
+        // return view('admin.products.create', compact('products', 'tags', 'categories', 'keywords', 'blogs'));
+        return view('admin.products.create', compact('products', 'categories'));
+    }
+    public function store(Request $request)
+    {
+        //
+        logger()->debug(" category - Store : " . var_export($request->all(), true));
+        $product = (new Products)
+            ->validateAndFill($request->all())
+            ->setAttribute('status', Products::STATUS_ACTIVE)
+            ->setAttribute('type', Products::TYPE_MAIN);
+
+        // set default value 
+        $product->name = $this->assignDefaultValue($request->input("name")['en'], $request->input('name'));
+        $product->desc = $this->assignDefaultValue($request->input("desc")['en'], $request->input('desc'));
+        $product->intro = $this->assignDefaultValue($request->input("intro")['en'], $request->input('intro'));
+        $product->spec = $this->assignDefaultValue($request->input("spec")['en'], $request->input('spec'));
+        logger()->debug(" product - Store data : " . var_export($product, true));
+        // store relationship 
+
+        if ($product->save()) {
+            logger()->debug(" product - Store data : SAVED" . var_export($request->all(), true));
+            return redirect()->route('admin.products_list', [config('app.locale')])->with('status', 'Product is added');
+        } else {
+            logger()->debug(" product - Store data : NO inserted" . var_export($request->all(), true));
+            return back()->with('autofocus', true);
+        }
+
+        //  return view('admin.products.index', compact('products'));
+    }
+    public function update(Request $request)
+    {
+        return view('admin.products.index', compact('products'));
+    }
+    public function delete(Request $request)
+    {
+        return view('admin.products.index', compact('products'));
+    }
+
+    /**
+     * list all products listing
+     * return json 
+     * 
+     */
+    public function apiProductLists()
+    {
+        return response()->json(Products::whereStatus("Active")->orderBy('seq', 'asc')->get());
+    }
+
+    /**
+     * 
+     */
+    public function getProductByCategory()
+    {
+    }
+
+    public function edit(Request $request)
+    {
+        // tags
+        //  $tags = Tags::whereStatus("Active")->get();
+        // categorys
+        $categories = Category::whereStatus("Active")->get();
+        // keywords
+        //  $keywords = Keywords::whereStatus("Active")->get();
+        // blogs
+        //  $blogs = Blogs::whereStatus("Active")->get();
+        // products
+        // blogs
+        $products = WebProducts::whereStatus("Active")->whereId($request->get('id'))->get();
+
+
+        // return view('admin.products.create', compact('product', 'tags', 'categories', 'keywords', 'blogs'));
+        return view('admin.products.create', compact('product'));
+    }
+    public function listProductWithImage($locale, Request $request)
+    {
+        Logger()->debug("listProductWithImage " . var_export($request->all(), true));
+        //    $sql = 'SELECT p.id as product_id, p.partno AS partno, i.docname AS docname, i.docdir AS dir, p.pstatus as pstatus, p.lang as lang  FROM products p LEFT JOIN images i ON i.partno = p.partno  ';
+        $listProducts = DB::table('products AS p')
+            ->selectRaw("p.id as product_id, p.partno AS partno, p.pstatus as pstatus, p.lang as lang,  i.docname, i.ctype as itype, i.docdir as dir");
+
+       //     ->leftJoin('images AS i', 'p.partno', '=', 'i.partno');
+        //      ->leftJoin('prodlist_boxes AS pb', 'p.partno', '=', 'pb.productcode');
+        $listProducts->leftJoin(
+            DB::raw('(select listpic, docname, ctype, partno FROM images WHERE listpic = 1 AND ctype="gallery") as i'), 
+                function ($join){
+                    $join->on('p.partno', '=', 'i.partno');
+                }
+            );
+
+        if ($request->input('partno')) {
+            $listProducts->where("p.partno", 'like', '%' . $request->input('partno') . '%');
+        }
+ //       $listProducts->where("i.ctype", 'gallery');
+//        $listProducts->where("i.listpic", 1);
+        $listProducts->where("p.lang", $request->input('lang'));
+
+        if ($request->input('new') == 'true') {
+            Logger()->debug("listProductWithImage  in new");
+            $listProducts->where("p.newproduct", 1);
+        }
+
+        if ($request->input('upcoming') == 'true') {
+            Logger()->debug("listProductWithImage  in upcoming");
+            $listProducts->where("p.upcoming", 1);
+        }
+        if ($request->input('iscooler') == 'true') {
+            Logger()->debug("listProductWithImage  in iscooler");
+            $listProducts->where("p.iscooler", 1);
+        }
+
+        if ($request->input('eol') == 'true') {
+            Logger()->debug("listProductWithImage  in eol");
+            $listProducts->where("p.eol", 1);
+        }
+        if ($request->input('rows')) {
+            Logger()->debug("listProductWithImage  in rows");
+            $listProducts->limit($request->input('rows'));
+        } else {
+            $listProducts->limit('5');
+        }
+
+        $listProducts->orderBy("partno");
+        $listProducts->groupBy("partno");
+        return response()->json($listProducts->get());
+    }
+
+    public function generateConfByMenucat($locale, Request $request, FileService $fileService)
+    {
+
+        if ($request->get('menucat')) {
+            Logger()->debug("generateConfByMenucat : DONE  : " . var_export($request->get('menucat'), true));
+            $boxes = ProdlistBoxes::where('menucat', strval(sprintf("%04d", $request->get('menucat'))))->get();
+            $aryPartno = [];
+            Logger()->debug("generateConfByMenucat : DONE  : " . var_export($boxes, true));
+            foreach ($boxes as $box) {
+                $jsonProduct = $this->showOne($locale, $box->productcode);
+                $aryPartno[] = $box->productcode;
+                $result = $fileService->createConf('product', $box->productcode . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct));
+            }
+            Logger()->debug("generateConfByMenucat : DONE  : " . var_export($aryPartno, true));
+            return response()->json(['result' => $result]);
+        } else {
+            return  response()->json(['result' => false]);
+        }
+    }
+
+    public function generateSingleConf($locale, Request $request, FileService $fileService)
+    {
+        $partno = $request->get('partno');
+        $jsonProduct = $this->showOne($locale, $partno);
+
+        $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct));
+        Logger()->debug("generateSingleConf : partno : " . $partno . ", result : " . var_export($result, true));
+
+        // export files
+        //
+        //export images from backend to akasa2206 front end
+        //
+        $images = Images::where('partno', $partno)->get();
+        foreach ($images as $image) {
+            if ($image->docname) {
+                $fileService->exportFiles($image->ctype, $image->docname, $image->partno);
+            }
+        }
+
+        //
+        //export download from backend to akasa2206 front end
+        //
+        $downloads = Downloads::where('partno', $partno)->get();
+        foreach ($downloads as $dl) {
+            if ($dl->docname) {
+                $fileService->exportFiles($dl->ftype, $dl->docname, $dl->partno);
+            }
+        }
+
+        return response()->json(['result' => $result]);
+    }
+
+    //public function showOne ($locale, $partno){
+
+    public function showOne($locale, $partno)
+    {
+        Logger()->debug("showOne " . var_export($partno, true));
+        //$partno ="AK-CC7139HP01";
+        if ($partno) {
+            $product = Products::with('download:partno,lang,subject,docname,docdir,ftype,comment,filesize,filetype')
+            ->with('activeReviews')
+            ->with('activeRelatedBoxes')
+                ->with(['spec' => function ($query) {
+                    $query->select("prod_spec.partno","prod_spec.specname","prod_spec.specdesc","prod_spec.group_id",DB::raw('MIN(prod_spec.seqno) as min_seqno'))->leftJoin('prod_spec_groups as pg', 'pg.id', '=', 'prod_spec.group_id')->groupBy('group_id')->orderBy("pg.seqno")->with('specGroup');
+                  //  ->orderBy("min_seqno")
+                    
+                   // $query->groupBy('group_id');,DB::raw('MAX(prod_spec.seqno) as max_seqno')->orderBy("max_seqno")
+                  //$query->select('prod_spec.group_id')->leftJoin('prod_spec_groups as pg', 'pg.id', '=', 'prod_spec.group_id')->groupBy('prod_spec.group_id')->orderBy("pg.seqno");
+                //   $query->groupBy('parent_id');
+                }])
+                ->with(['productInBox' => function ($query) use ($locale) {
+                    $query->where('lang', $locale);
+                }])
+                ->with(['faqs' => function ($query) use ($locale) {
+                    $query->select("question","answer","partno")->where('lang', $locale);
+                }])
+                ->with('feature_images:docdir,docname,partno')
+                ->with('gallery:docdir,docname,partno')
+                ->with(['content_images' => function ($query){
+                    $query->select("docdir","docname","partno")->orderBy('seqno');
+                }])
+                ->with('spec_images:docdir,docname,partno')
+                ->where('partno', $partno)->where('lang', $locale)->first()->toArray();
+        }
+        Logger()->debug("showOne spec" . var_export($product['spec'], true));
+        // find spec
+        foreach ($product['spec'] as $key => $spec) {
+
+            $product['spec'][$key]['children'] =  ProdSpec::select('prod_spec.*', 'pg.group_name')->leftJoin('prod_spec_groups as pg', 'pg.id', '=', 'prod_spec.group_id')
+                ->where('prod_spec.group_id', $spec['group_id'])->where('prod_spec.partno', $partno)->where('prod_spec.lang', $locale)->get()->toArray();
+            // $product['spec'][$key]['children'] = ProdSpec::where('pg.group_id', $spec['group_id'])->where('partno', $partno)->where('lang', $locale)->get()->toArray();
+        }
+
+        // find boxes [boxes][menucat_name]
+
+        $boxes = ProdlistBoxes::select('boxno','menucat')->where('productcode', $partno)->groupBy("boxno")->get()->toArray();
+        if ($boxes) {
+            // call productBoxController
+            $ProductBoxesCtrl = new ProductBoxesController;
+            $product['boxes'] = $ProductBoxesCtrl->getBoxDataWithImage($locale, $boxes);
+        }
+        // end boxes
+
+        // start related boxes
+
+        foreach ($product['activeRelatedBoxes'] as $relatedBoxes) {
+            // call productBoxController
+            $ProductBoxesCtrl = new ProductBoxesController;
+            $product['related_boxes'][$relatedBoxes['menucat'] . "_" . $relatedBoxes['boxno']] = $ProductBoxesCtrl->getRelatedBoxesCard($relatedBoxes['menucat'], $relatedBoxes['boxno'], $locale);
+            // find prodlist_boxes  with product (partno, title, name, pstatus, feature image, no_boxitem)
+        }
+        logger()->debug(" showOne : " . var_export($product['related_boxes'], true));
+
+        // // start related product using partonline
+        // $aryRelated = explode(",", $product['related']);
+        // if (($key = array_search($partno, $aryRelated)) !== false) {
+        //     unset($aryPartonline[$key]);
+        // }
+        // if (count($aryRelated) > 0) {
+        //     $product['relates'] = DB::table('products AS p')
+        //         ->select(
+        //             'p.id as product_id',
+        //             'p.partno AS partno',
+        //             'p.name AS name',
+        //             'p.title AS title',
+        //             'i.docname AS docname',
+        //             'i.docdir AS dir',
+        //             'p.pstatus as pstatus',
+        //             'p.lang as lang'
+        //         )
+        //         ->leftJoin('images AS i', 'p.partno', '=', 'i.partno')
+        //         ->orWhere(function ($query) use ($aryRelated, $locale) {
+        //             $query->where("i.ctype", "gallery")
+        //                 ->where("i.docname", 'like', '%g00%')
+        //                 ->where('p.lang', $locale)
+        //                 ->whereIn("p.partno", $aryRelated);
+        //         })
+        //         ->orWhere(function ($query) use ($aryRelated, $locale) {
+        //             $query->where("i.ctype", "feature")
+        //                 ->where("i.docname", 'like', '%f00%')
+        //                 ->where('p.lang', $locale)
+        //                 ->whereIn("p.partno", $aryRelated);
+        //         })
+
+        //         //->where("i.ctype", "feature")->where("i.docname", 'like', '%f00%')
+        //         ->groupBy("p.partno")->get();
+        // }
+        // // end realted product
+
+
+
+        return json_encode($product);
+        //return response()->json($product);
+    }
+
+    public function generateAllConf($locale,  FileService $fileService)
+    {
+       // ini_set('max_execution_time', 6000);
+       // set_time_limit(6000);
+        $cnt = 1;
+        $allProduct = Products::select('partno', 'exported')->where("lang", '=', $locale)->where('exported', '=', 0)->limit(20)->get();
+        foreach ($allProduct as $product) {
+            $cnt++;
+
+            $jsonProduct = $this->showOne($locale, $product->partno);
+            $fileService->createConf('product', $product->partno . '.conf', $locale,   "[product]\ndetails=" . json_encode($jsonProduct));
+            Products::where('partno', $product->partno)->where("lang", '=', $locale)
+                ->update(['exported' => 1]);
+        }
+        echo $cnt;
+    }
+
+    public function generateAllConfWithFiles($locale,  FileService $fileService)
+    {
+       // ini_set('max_execution_time', 6000);
+       // set_time_limit(6000);
+        $cnt = 1;
+        $allProduct = Products::select('partno', 'exported')->where("lang", '=', $locale)->where('exported', '=', 0)->limit(20)->get();
+        foreach ($allProduct as $product) {
+            $cnt++;
+
+            $jsonProduct = $this->showOne($locale, $product->partno);
+            $fileService->createConf('product', $product->partno . '.conf', $locale,   "[product]\ndetails=" . json_encode($jsonProduct));
+            Products::where('partno', $product->partno)->where("lang", '=', $locale)
+                ->update(['exported' => 1]);
+            
+            // export files
+            //
+            //export images from backend to akasa2206 front end
+            //
+            $images = Images::where('partno', $product->partno)->get();
+            foreach ($images as $image) {
+                if ($image->docname) {
+                    $fileService->exportFiles($image->ctype, $image->docname, $image->partno);
+                }
+            }
+
+            //
+            //export download from backend to akasa2206 front end
+            //
+            $downloads = Downloads::where('partno', $product->partno)->get();
+            foreach ($downloads as $dl) {
+                if ($dl->docname) {
+                    $fileService->exportFiles($dl->ftype, $dl->docname, $dl->partno);
+                }
+            }
+        }
+        echo $cnt;
+    }
+
+    public function getProductListByMenucat($locale, Request $request)
+    {
+        logger()->debug(" getProductListByMenucat : " . var_export($request->all(), true));
+        $page = ($request->get('page') ? $request->get('page') : 1);
+        $rows = ($request->get('rows') ? $request->get('rows') : 0);
+        $offset = ($page - 1) * $rows;
+        $menucat = strval(sprintf("%04d", $request->get('menucat')));
+        $ProductBoxesCtrl = new ProductBoxesController;
+        $products = $ProductBoxesCtrl->getBoxDataByMenucat($menucat, $locale, $offset, $rows);
+
+        //     logger()->debug(" getProductListByMenucat : aryData " . var_export($products, true));
+        if ($products) {
+            //total_products , total boxes
+            $cntBoxes = $products->pluck("boxno");
+            $aryData['total_boxes'] = $cntBoxes->unique()->count();
+            $aryData['total'] = $products->count();
+            $aryData['rows'] = $products->toArray();
+            $aryData['result'] = true;
+        } else {
+            $aryData['total'] = 0;
+            $aryData['rows'] = [];
+            $aryData['result'] = false;
+        }
+
+        return response()->json($aryData);
+    }
+
+
+    /****
+     * request the partno and get the related boxes then fetch the boxes 
+     */
+    public function getProductListByPartno($locale, Request $request)
+    {
+        try {
+            $this->validate(
+                $request,
+                [
+                    'partno' => 'required',
+                ],
+                [
+                    'partno.required' => 'partno is required.',
+
+                ]
+            );
+
+            // first get the related boxes by partno
+            $ProductBoxesCtrl = new ProductBoxesController;
+            $relatedBoxes = $ProductBoxesCtrl->getRelatedBoxesByPartno($locale, $request->get("partno"));
+
+            if ($relatedBoxes['menucat'] && $relatedBoxes['boxno']) {
+
+                $page = ($request->get('page') ? $request->get('page') : 1);
+                $rows = ($request->get('rows') ? $request->get('rows') : 0);
+                $offset = ($page - 1) * $rows;
+                logger()->debug(" getProductListByPartno : relatedBoxes " . var_export($relatedBoxes['menucat'], true));
+                $aryMenu = [];
+                if ($relatedBoxes['menucat']) {
+                    
+                    foreach ($relatedBoxes['menucat'] as $key => $value) {
+                        $aryMenu[] = sprintf("%04d", $value);
+                    }
+                    logger()->debug(" getProductListByPartno : menucat aryMenu " . var_export($aryMenu, true));
+                }
+
+                $ProductBoxesCtrl = new ProductBoxesController;
+                $products = $ProductBoxesCtrl->getBoxDataByBoxno($aryMenu, $relatedBoxes['boxno'], $locale, $offset, $rows);
+
+
+                if ($products) {
+                  //  logger()->debug(" getProductListByPartno : menucat products " . var_export($products->toArray(), true));
+                    //total_products , total boxes
+                    $aryData['rows'] = $products->toArray();
+                    $cntBoxes = $products->pluck("boxno");
+                    $aryData['total_boxes'] = $cntBoxes->unique()->count();
+                    $aryData['total'] = $products->count();
+
+                    $aryData['result'] = true;
+                  //  logger()->debug(" getProductListByPartno : aryData " . var_export($aryData, true));
+                } else {
+                    $aryData['total'] = 0;
+                    $aryData['rows'] = [];
+                    $aryData['result'] = false;
+                }
+                return response()->json($aryData);
+            } else {
+                Logger()->debug(" getProductListByPartno no result");
+                return false;
+            }
+        } catch (ValidationException $ex) {
+            return $ex->validator->errors();
+        }
+    }
+}

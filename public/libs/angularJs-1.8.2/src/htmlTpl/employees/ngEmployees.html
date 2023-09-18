@@ -1,0 +1,270 @@
+<!--   <add-empl-directive></add-empl-directive>-->
+<script type="text/ng-template" id="addEmplFormTpl">
+            <!-- Begin of Add Empl Form Modal -->
+<div class="modal fade" id="addEmplFormModal" tabindex="-1" aria-labelledby="addEmplModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmplModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="ng-invalid ng-invalid-required" name="addEmplFrm" ng-submit="submitAddEmpl(addEmplFrm)">
+                <div class="modal-body">
+                    <!-- start form -->
+                    <div class="mb-3 row">
+                        <label for="aefrm_name" class="col-sm-3 col-form-label text-end">Name *</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="aefrm_name" name="name"
+                                ng-model="newEmplFormData.name" required />
+                            <div ng-show="newEmplFormData.invalid_name" class="text-danger fs-6 ">Name is
+                                required</div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="aefrm_username" class="col-sm-3 col-form-label text-end">Username *</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="aefrm_username" name="username"
+                                ng-model="newEmplFormData.username" required />
+                            <div ng-show="newEmplFormData.invalid_username" class="text-danger fs-6 ">Username is
+                                required</div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="aefrm_email" class="col-sm-3 col-form-label text-end">Email *</label>
+                        <div class="col-sm-7">
+                            <input type="email" class="form-control form-control-sm" id="aefrm_email" name="email"
+                                ng-model="newEmplFormData.email" required />
+                            <div ng-show="newEmplFormData.invalid_email" class="text-danger fs-6 ">Email is
+                                required and valid email format</div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="aefrm_password" class="col-sm-3 col-form-label text-end">Password *</label>
+                        <div class="col-sm-7">
+                            <input type="password" class="form-control form-control-sm" id="aefrm_password"
+                                name="password" ng-model="newEmplFormData.password" required />
+                            <div ng-show="newEmplFormData.invalid_password_length" class="text-danger fs-6 ">Password
+                                must be at least 8 characters long.</div>
+                            <div ng-show="newEmplFormData.invalid_password" class="text-danger fs-6 ">Password is
+                                required</div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="aefrm_password_confirm" class="col-sm-3 col-form-label text-end">Confirm Password
+                            *</label>
+                        <div class="col-sm-7">
+                            <input type="password" class="form-control form-control-sm" id="aefrm_password_confirm"
+                                name="password_confirm" ng-model="newEmplFormData.password_confirm" required />
+                            <div ng-show="newEmplFormData.invalid_password_confirm" class="text-danger fs-6 ">Password
+                                is required or not match with password .</div>
+                        </div>
+                    </div>
+                    <!--- departments--->
+                    <div class="mb-3 row">
+                        <label for="aefrm_department" class="col-sm-3 col-form-label text-end">Department :</label>
+                        <div class="col-sm-7">
+                            <select ng-model="newEmplFormData.department" id='aefrm_department' name="department"
+                                ng-options="department.name for department in frmSettings.departments track by department.id"
+                                class="form-select form-select-sm">
+                                <option value="">-- Select Department --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="aefrm_position" class="col-sm-3 col-form-label text-end">Position :
+                        </label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" name="position" id="aefrm_position"
+                                ng-model="newEmplFormData.position" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="aefrm_location" class="col-sm-3 col-form-label text-end">Location :</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="aefrm_location" name="location"
+                                ng-model="newEmplFormData.location"/>
+
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            <!-- end form -->
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-disabled="newEmplFormData.submitting"
+                    ng-click="submitAddEmpl()">Add</button>
+            </div>
+        </div>
+    </div>
+</div><!-- END of Add Empl Form Modal -->
+</script>
+
+<!--   <edit-empl-directive></edit-empl-directive>-->
+<script type="text/ng-template" id="editEmplFormTpl">
+    <!-- Begin of edit Empl Form Modal -->
+<div class="modal fade" id="editEmplFormModal" tabindex="-1" aria-labelledby="editEmplModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmplModalLabel">Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="ng-invalid ng-invalid-required" name="editEmplFrm" ng-submit="submitEditEmpl(editEmplFrm)">
+                <div class="modal-body">
+                    <!-- start form -->
+                    <div class="mb-3 row">
+                        <label for="frm_email" class="col-sm-3 col-form-label text-end">Email
+                            *</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="frm_email" name="email"
+                                ng-model="editEmplFormData.email" required ng-disabled="true" />
+                            <div ng-show="editEmplFormData.invalid_email" class="text-danger fs-6 ">Email is
+                                required</div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="frm_username" class="col-sm-3 col-form-label text-end">Username
+                            *</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="frm_username" name="username"
+                                ng-model="editEmplFormData.username" required />
+                            <div ng-show="editEmplFormData.invalid_username" class="text-danger fs-6 ">Username is
+                                required</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="frm_name" class="col-sm-3 col-form-label text-end">Name
+                            *</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="frm_name" name="name"
+                                ng-model="editEmplFormData.name" required />
+                            <div ng-show="editEmplFormData.invalid_name" class="text-danger fs-6 ">Name is
+                                required</div>
+                        </div>
+                    </div>
+                    <!--- departments--->
+                    <div class="mb-3 row">
+                        <label for="frm_department" class="col-sm-3 col-form-label text-end">Department :</label>
+                        <div class="col-sm-7">
+                            <select ng-model="editEmplFormData.department" id='frm_department' name="department"
+                                ng-options="department.name for department in frmSettings.departments track by department.id"
+                                class="form-select form-select-sm">
+                                <option value="">-- Select Department --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="frm_position" class="col-sm-3 col-form-label text-end">Position
+                        </label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" name="position" id="frm_position"
+                                ng-model="editEmplFormData.position" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="frm_location" class="col-sm-3 col-form-label text-end">Location</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control form-control-sm" id="frm_location" name="location"
+                                ng-model="editEmplFormData.location"/>
+
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="frm_status" class="col-sm-3 col-form-label text-end">Status :*</label>
+                        <div class="col-sm-7">
+                            <select ng-model="editEmplFormData.status" name="status" id="frm_status"
+                                ng-options="status.value for status in frmSettings.status"
+                                class="form-select form-select-sm" required>
+                                <option value="">-- Select Status --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="frm_due_datetime" class="col-sm-12 col-form-label text-end">Last Updated at
+                                {#editEmplFormData.updated_at|date:'yyyy/MM/dd HH:m:s'#}
+                                by {#editEmplFormData.updated_by#}</label>
+                        </div>
+                        <hr>
+                        <div class="mb-3 row">
+                            <label for="aefrm_password" class="col-sm-3 col-form-label text-end">Password :</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control form-control-sm" id="frm_password"
+                                    name="password" ng-model="editEmplFormData.password" required />
+                                <div ng-show="editEmplFormData.invalid_password_length" class="text-danger fs-6 ">
+                                    Password must be at least 8 characters long.</div>
+                                <div ng-show="editEmplFormData.invalid_password" class="text-danger fs-6 ">Password is
+                                    required</div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="aefrm_password_confirm" class="col-sm-3 col-form-label text-end">Confirm
+                                Password :</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control form-control-sm" id="frm_password_confirm"
+                                    name="password_confirm" ng-model="editEmplFormData.password_confirm" required />
+                                <div ng-show="editEmplFormData.invalid_password_confirm" class="text-danger fs-6 ">
+                                    Password is required or not match with password .</div>
+                            </div>
+                        </div>
+                    </div>
+            </form>
+            <!-- end form -->
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="submitEditEmpl()">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END of edit Empl Form Modal -->
+</script>
+
+<!--   <del-employee-departments-directive></del-employee-departments-directive>-->
+<script type="text/ng-template" id="delEmplFormTpl">
+    <!-- Begin of edit Empl Form Modal -->
+<div class="modal fade" id="delEmplFormModal" tabindex="-1" aria-labelledby="delEmplModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="delEmplModalLabel">Del Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 row">
+                    <label for="frm_due_datetime" class="col-sm-1 col-form-label text-end">&nbsp;</label>
+                    <div class="col-sm-10">
+                        <p>Are you sure to delete "{#selectedEmpl.name#}" Employee?
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="submitDelEmpl()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END of edit Empl Form Modal -->
+</script>
+
+<!-- toolbar   <empl-list-toolbar-directive></empl-list-toolbar-directive>-->
+<script type="text/ng-template" id="emplListToolbarTpl">
+    <div id="employeesListToolbar" style="height:45px;" class="datagrid-toolbar">
+        <div style="height:30px;margin-top:5px;">
+            <!----<input id="searchTicketType" name="type" type="text">
+            <input id="searchTicketAssignee" name="assignee" type="text">
+            <input id="searchTicketStatus" name="status" type="text">
+            <a href="javascript:void(0);" class="btn btn-sm btn-orange"
+        ng-click="resetFilter()" title="Reset"><i class="bi bi-arrow-clockwise"></i></a> -->
+        
+        <a href="javascript:void(0);" class="btn btn-sm btn-orange float-end mx-2"
+        ng-click="editEmplModal()"><i class="bi bi-pencil"></i> Edit </a>
+        <a href="javascript:void(0);" class="btn btn-sm btn-orange float-end mx-2"
+        ng-click="addEmplModal()"><i class="bi bi-plus"></i> Add </a>
+        </div>
+    </div>
+</script>
+<!--END toolbar-->
