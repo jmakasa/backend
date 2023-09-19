@@ -1,0 +1,217 @@
+<!-- <main-info-directive></main-info-directive> -->
+<script type="text/ng-template" id="uploadFilesDirective">
+    <div class="row p-2">
+      <div class="col-6">
+        <div class="panel main_panel" style="height:850px">
+          <div class="panel-header">
+            <div class="panel-title" id="allUploadFilesList">Upload Files List</div>
+            <div class="panel-tool"></div>
+          </div>
+          <div class="panel-body">
+            <table id="uploadfileslist"></table>
+            <div id='upload_files_toolbar'>
+              <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" ng-click="assignUploadTasks()"><i
+                  class="bi bi-fast-forward-btn"></i>&nbsp;Assign Tasks</a>
+              <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" ng-click="uploadFileNow()"><i
+                  class="bi bi-file-arrow-up"></i>&nbsp;Upload Now</a>
+                  <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" ng-click="removeUploadedFile()"><i
+                    class="bi bi-file-arrow-down"></i>&nbsp;Remove Now</a>   
+              <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" onclick="delUploadFiles()"><i
+                  class="bi bi-trash"></i>&nbsp;Del</a>
+
+              <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
+                onclick="clearSelections('uploadfileslist')"><i class="bi bi-arrow-clockwise"></i>&nbsp;Clear</a>
+
+              <div class="float-end">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="panel main_panel" style="height:850px">
+          <div class="panel-header">
+            <div class="panel-title" id="allProductsTitle">Upload Files Tasks List</div>
+            <div class="panel-tool"></div>
+          </div>
+          <div class="panel-body">
+            <table id="uploadFilesTasksList"></table>
+            <div id='upload_files_tasks_toolbar'>
+              <input id="tasktools_fileType" name="type" type="text">
+              <!-- <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" onclick="editTask()"><i
+                  class="bi bi-pencil"></i>&nbsp;Task</a> -->
+              <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" onclick="executeTasks()"><i
+                  class="bi bi-file-arrow-up"></i>&nbsp;Execute Tasks</a>
+              <a href="javascript:void(0)" class="btn btn-sm btn-orange m-1" onclick="delTasks()"><i
+                  class="bi bi-trash"></i>&nbsp;Del Task</a>
+              <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
+                onclick="clearSelections('uploadFilesTasksList')"><i class="bi bi-arrow-clockwise"></i>&nbsp;Clear</a>
+
+
+
+              <!-- <div class="float-end">
+                <p>* double click to edit task <br>** Status : Pending > Ready to Upload > Uploaded or Failed to Upload
+                </p>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+  <!-- Begin of Upload hosting Form Modal -->
+  <div class="modal fade" id="uploadHostingModal" tabindex="-1" aria-labelledby="uploadHostingModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadHostingModal" ng-show="uploadFileNowBtn == false && removeFileNowBtn == false">Assign Upload Tasks</h5>
+          <h5 class="modal-title" id="uploadHostingModal" ng-show="uploadFileNowBtn == true && removeFileNowBtn == false">Upload Now</h5>
+          <h5 class="modal-title" id="uploadHostingModal" ng-show="removeFileNowBtn == true && uploadFileNowBtn == false ">Remove File Now</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="frmUploadFiles" enctype="multipart/form-data" method="post">
+            <input type="text" id="frmUploadFiles_id" name="id" value="" hidden=true>
+            <div class="container">
+              <div class="row">
+                <div class="col-4">
+                  Launch Datetime :
+                </div>
+                <div class="col-6">
+                  <input class="easyui-datetimebox" name="launch_datetime" ng-model="uploadFileData.launch_datetime"
+                    id="frmUploadFiles_launch_datetime" value="{{date | date: yyyy}}">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  Hosting :
+                </div>
+                <div class="col-6">
+                  <div class="form-check form-check-inline" ng-repeat="hostname in hostnames">
+                    <input class="form-check-input" type="checkbox"  ng-checked="hostname.selected" ng-model="hostname.selected" >
+                    <label class="form-check-label" for="inlineCheckbox1">{{ hostname.name }}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary btn-sm" ng-click="submitAssignUploadTasks()" ng-show="uploadFileNowBtn == false && removeFileNowBtn == false">Assign upload</button>
+          <button type="button" class="btn btn-primary btn-sm" ng-click="submitUploadFileNow()" ng-show="uploadFileNowBtn == true && removeFileNowBtn == false">Upload Now</button>
+          <button type="button" class="btn btn-primary btn-sm" ng-click="submitRemoveUploadedFileNow()" ng-show="removeFileNowBtn == true && uploadFileNowBtn == false">Remove file Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END of Upload hosting Form Modal -->
+
+
+
+  <!-- dialog or form-->
+
+  <form id="delUploadFiles" enctype="multipart/form-data" method="post">
+    <input type="text" id="frmDelUploadFilesId" name="id" value="" hidden=true>
+  </form>
+
+  <!-- Begin of assign task Form Dialog JM-->
+  <div class="easyui-dialog" id="dlgUpdate" data-options="resizable:true"
+    style="width:550px;height:400px;padding:10px 20px" closed="true" buttons="#dlg-buttons" title="Assign Upload Tasks">
+    <form id="frmUploadFiles" enctype="multipart/form-data" method="post">
+      <input type="text" id="frmUploadFiles_id" name="id" value="" hidden=true>
+      <div>
+        <input class="easyui-datetimebox" name="launch_datetime" id="frmUploadFiles_launch_datetime"
+          style="width:440px;" data-options="label:'Launch Datetime:',labelWidth:'140px',labelAlign:'right'"
+          value="{|$smarty.now|date_format:'%Y-%m-%d %H:%M:00'|}">
+        </p>
+      </div>
+      <div>
+        <div style="margin-bottom:20px">
+          <input class="easyui-checkbox" data-options="label:'Release Date:',labelWidth:'140px',labelAlign:'right'"
+            name="hostname[]" value="akasa2206_uk" label="UK Web [2206]">
+          <input class="easyui-checkbox" data-options="label:'Release Date:',labelWidth:'140px',labelAlign:'right'"
+            name="hostname[]" value="akasa2206_tw" label="TW Web [2206]">
+        </div>
+        <div style="margin-bottom:20px">&nbsp;</div>
+      </div>
+    </form>
+    <div style="text-align:center;padding:5px 0">
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitUploadForm()" style="width:80px">Upload</a>
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="cancelDlgFrm('dlgUpdate','frmUploadFiles')"
+        style="width:80px">Cancel</a>
+    </div>
+  </div>
+  <!-- End of assign task Form Dialog -->
+  <!-- Begin of upload now Form Dialog JM-->
+  <div class="easyui-dialog" id="dlgUploadNow" data-options="resizable:true"
+    style="width:550px;height:300px;padding:10px 20px" closed="true" buttons="#dlg-buttons" title="Upload File Now">
+    <form id="frmUploadNow" enctype="multipart/form-data" method="post">
+      <input type="text" id="frmUploadNow_id" name="id" value="" hidden=true>
+      <input type="text" id="frmUploadNow_id" name="launch_datetime" value="{{ '' | newDate }}" hidden=true>
+      <div>
+        <h6>&nbsp;&nbsp;&nbsp;Select one of hosts at below : </h6>
+        <div style="margin-bottom:20px">
+          <div class="easyui-checkgroup" id="uploadNowHost"></div>
+          <input class="easyui-checkbox" data-options="label:'Release Date:',labelWidth:'140px',labelAlign:'right'"
+            name="hostname[]" value="akasa2206_uk" label="UK Web [2206]">
+          <input class="easyui-checkbox" data-options="label:'Release Date:',labelWidth:'140px',labelAlign:'right'"
+            name="hostname[]" value="akasa2206_tw" label="TW Web [2206]">
+        </div>
+        <div style="margin-bottom:20px">&nbsp;</div>
+      </div>
+    </form>
+    <div style="text-align:center;padding:5px 0">
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitUploadNowForm()" style="width:80px">Save</a>
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="cancelDlgFrm('dlgUploadNow','frmUploadNow')"
+        style="width:80px">Cancel</a>
+    </div>
+  </div>
+  <!-- End of upload now Form Dialog -->
+  <!-- Begin of edit task Form Dialog JM-->
+  <div class="easyui-dialog" id="dlgEditTasks" data-options="resizable:true"
+    style="width:550px;height:400px;padding:10px 20px" closed="true" buttons="#dlg-buttons" title="Edit tasks">
+    <form id="frmEditTask" enctype="multipart/form-data" method="post">
+      <input type="text" id="frmEditTask_id" name="id" value="" hidden=true>
+      <div>
+        <p>
+          <input class="easyui-datetimebox" name="launch_datetime" id="frmEditTask_launch_datetime" style="width:440px;"
+            data-options="label:'Launch Datetime:',labelWidth:'140px',labelAlign:'right'">
+        </p>
+      </div>
+      <div>
+        <div style="margin-bottom:20px">
+          <input class="easyui-radiobutton" data-options="label:'Release Date:',labelWidth:'140px',labelAlign:'right'"
+            name="hostname" value="akasa2206_uk" label="UK Web [2206]">
+          <input class="easyui-radiobutton" data-options="label:'Release Date:',labelWidth:'140px',labelAlign:'right'"
+            name="hostname" value="akasa2206_tw" label="TW Web [2206]">
+        </div>
+        <div style="margin-bottom:20px">
+          <p><b><input id="frmEditTask_status" name="status" type="text"></b></p>
+        </div>
+      </div>
+    </form>
+    <div style="text-align:center;padding:5px 0">
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitEditTasksForm()" style="width:80px">Save</a>
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="cancelDlgFrm('dlgEditTasks','frmEditTask')"
+        style="width:80px">Cancel</a>
+    </div>
+  </div>
+  <!-- End of edit task Form Dialog -->
+    <!-- Begin List of filter type Dialog JM-->
+    <div class="easyui-dialog" id="dlgFilterTypeList" data-options="resizable:true"
+    style="width:1000px;height:800px;padding:10px 20px" closed="true" buttons="#dlg-buttons" title="List of Filter types">
+
+    <table id="listFilterTypes"></table>
+
+    <div style="text-align:center;padding:5px 0">
+      <a href="javascript:void(0)" class="easyui-linkbutton" onclick="cancelDlgFrm('dlgEditTasks','frmEditTask')"
+        style="width:80px">Close</a>
+    </div>
+  </div>
+  <!-- End of List of filter type Dialog -->
+  <!-- END dialog or form-->
+</div>
+
+</script>

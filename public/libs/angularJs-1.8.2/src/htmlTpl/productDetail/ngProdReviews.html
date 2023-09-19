@@ -1,0 +1,216 @@
+<!--   <reviewsites-directive></reviewsites-directive>-->
+<script type="text/ng-template" id="reviewsitesDirective">
+      <table id="sitelist"></table>
+      <div id="rs_toolbar">
+        <input  class="easyui-combobox" id="sitenamekey" style="line-height:26px;width:200px;" 
+          data-options="
+          loader: loadreviewsite,
+          mode: 'remote',
+          valueField: 'id',
+          textField: 'name'
+        ">
+        <a href="javascript:void(0)" class="btn btn-orange btn-sm" ng-click="searchReviewsites()" ><i class="bi bi-search"></i></a>
+        <a href="javascript:void(0)" class="btn btn-orange btn-sm" ng-click="refreshReviewsites()" ><i class="bi bi-arrow-clockwise"></i></a>
+        <a href="javascript:void(0)"  class="btn btn-orange btn-sm" ng-click="editreviewicon('-1')"><i class="bi bi-plus me-1"></i>Icon</a>
+        <a href="javascript:void(0)"  class="btn btn-orange btn-sm" ng-click="editreviewicon('0')"><i class="bi bi-pencil me-1"></i>Icon</a>
+        <a href="javascript:void(0)"  class="btn btn-orange btn-sm" ng-click="deleteReviewsite()"><i class="bi bi-trash me-1"></i>Logo</a>
+        <a href="javascript:void(0)"  class="btn btn-orange btn-sm" ng-click="exportReviewsiteConf()"><i class="bi bi-upload me-1"></i></a>
+        
+      </div>
+</script>
+<!--   <prod-reviews-directive></prod-reviews-directive>-->
+<script type="text/ng-template" id="prodReviewsDirective">
+  <div style="width:530px;height:800px;">
+    <div class="easyui-panel" id="rf_panel" title="Add Review to Product" style="float:left;">
+      <!-- Begin of Product Review Form -->
+      <div class="row" style="width:99%">
+        <div class="col">
+        <form id="prodReviewForm" method="post" name="prodReviewForm">
+          <div class="form-group row">
+            <label for="rf_seqno" class="col-sm-2 col-form-label text-end">Selected Icon *</label>
+            <div class="col-sm-10">
+              {#addProdReviewsData.sitename|trustAsHtml#}
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">&nbsp;</label>
+            <div class="col-sm-10">
+              <img src="{#addProdReviewsData.sitelogosrc#}" class="img-thumbnail" width="150px">
+              <span  ng-show="addProdReviewsData.invalid_reviewsites_id && addProdReviewsData.submitting"  class="text-danger fs-6">Please selete 1 of Review sites.</span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">&nbsp;</label>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <input class="form-check-input border-orange mt-2" type="checkbox" id="rf_is_hide_icon"  name="is_hide_icon" value="1"  ng-model="addProdReviewsData.is_hide_icon">
+                <label class="form-check-label mt-1 align-middle" for="is_hide_icon">
+                  is hidden icon?
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          <div class="form-group row">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">Title *</label>
+            <div class="col-sm-10">
+              <input name="title"  id="rf_title" class="form-control  form-control-sm border-orange mt-1" ng-model="addProdReviewsData.title">
+              <span ng-show="addProdReviewsData.invalid_title && addProdReviewsData.submitting" class="text-danger fs-6">Title
+                is required</span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="rf_seqno" class="col-sm-2 col-form-label text-end">Seqno</label>
+            <div class="col-sm-4">
+              <input name="title" id="rf_seqno"  placeholder="0010" class="form-control  form-control-sm border-orange mt-1" ng-model="addProdReviewsData.seqno" > 
+              <span  ng-show="addProdReviewsData.invalid_seqno && addProdReviewsData.submitting"  class="text-danger fs-6">4 digits only</span>
+            </div>
+            <label for="rf_is_highlight" class="col-sm-1 col-form-label text-end"></label>
+            <div class="col-sm-4">
+              <div class="form-check">
+                <input class="form-check-input border-orange mt-2 " type="checkbox" id="rf_is_highlight"  name="is_highlight" value="1"  ng-model="addProdReviewsData.is_highlight">
+                <label class="form-check-label  mt-1 align-middle" for="is_highlight">
+                  is Large Box?
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group row">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">Type *</label>
+            <div class="col-sm-10">
+              <div class="form-check form-check-inline mt-1" ng-repeat="optValue in prodReviewsTypes">
+                <input class="form-check-input" type="radio" name="type" value="optValue" ng-model="addProdReviewsData.type" ng-value="optValue">
+                <label class="form-check-label" for="inlineRadio3">{#optValue#}</label>
+              </div>
+              <span  ng-show="addProdReviewsData.invalid_type && addProdReviewsData.submitting"  class="text-danger fs-6">Please select one of product review type.</span>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">Web link *</label>
+            <div class="col-sm-10">
+              <input name="title"  id="rf_title" class="form-control  form-control-sm border-orange mt-1" ng-model="addProdReviewsData.web_link">
+              <span ng-show="addProdReviewsData.invalid_web_link && addProdReviewsData.submitting" class="text-danger fs-6">Web link
+                is required</span>
+            </div>
+          </div>
+
+          <div class="form-group row my-1">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">Desc *</label>
+            <div class="col-sm-10">
+              <textarea class="form-control border-orange"form-control-sm  id="rf_short_desc" style="height: 100px" ng-model="addProdReviewsData.short_desc"></textarea>
+              <span ng-show="addProdReviewsData.invalid_short_desc && addProdReviewsData.submitting" class="text-danger fs-6">Desc
+                is required</span>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="rf_title" class="col-sm-2 col-form-label text-end">Remarks</label>
+            <div class="col-sm-10">
+              <input name="remarks"  id="rf_remarks" class="form-control  form-control-sm border-orange mt-1" ng-model="addProdReviewsData.remarks" placeholder="(e.g. dd-mm-yyyy)">
+            </div>
+          </div>
+          <hr>
+          
+          <div class="form-group row">
+            <label for="rf_image_file" class="col-sm-2 col-form-label text-end">Image File</label>
+            <div class="col-sm-10">
+              <img src="{#config.imgpath#}{#addProdReviewsData.images.docname#}" class="img-thumbnail" width="150px" ng-if="addProdReviewsData.images.docname">
+              <a href="javascript:void(0);" ng-click="removeProdReviews()" title='Remove Image' ng-if="addProdReviewsData.images.docname"><i class="bi bi-trash"></i></a>
+              <input type="file" file-uploads-model="addProdReviewsData.prImage" class="form-control border-orange"
+                                  id="prImage" />
+            </div>
+          </div>
+
+        </form>
+        </div>
+      </div>
+      <div style="text-align:center;padding:5px 0">
+        <!-- onclick="submitReviewForm()"-->
+        <a href="javascript:void(0)" ng-disabled="addProdReviewsData.addBtnEnabled" class="btn btn-sm btn-orange" ng-click="submitNewProdReviews()" style="width:80px"><i class="bi bi-save me-1"></i>Save</a>
+        <a href="javascript:void(0)" class="btn btn-sm btn-secondary" ng-click="resetProdReviewForm()" style="width:80px"><i class="bi bi-arrow-repeat me-1"></i>Reset</a>
+      </div>
+      <!-- End of Product Review Form -->
+
+    </div>
+  </div>
+</script>
+
+<!--   <product-reviews-directive></product-reviews-directive>-->
+<script type="text/ng-template" id="productReviewsDirective">
+  <table id="productReviewsList" class="easyui-datagrid" title="Product Reviews - {#config.partno#} {#config.lang#}"></table>
+  <div id='productReviewsList_toolbar'>
+    <a href="javascript:void(0)" class="btn btn-sm btn-orange"
+      ng-click="deleteProductReviews()"><i class="bi bi-trash me-1"></i>Delete Review</a>
+      <a href="javascript:void(0)" class="btn btn-sm btn-orange" title="Reload Product Review List"
+      ng-click="reloadProdReviewList()"><i class="bi bi-arrow-repeat"></i></a>
+  </div>
+  <!-- Modal -->
+<div class="modal fade" id="deleteProdReviewModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">Delete Product Review</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6>Are you sure you want to delete?</h6>
+        <p>Title : {#addProdReviewsData.title#}</p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger" ng-click="submitDelProdReviews()">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="listProdReviewBySiteModal">
+  <div class="modal-dialog  modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">List of Product Reviews (Sitename : {#listProdReviewBySites.sitename#})</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Partno</th>
+              <th scope="col">Title</th>
+              <th scope="col">Remarks</th>
+              <th scope="col">Type</th>
+            </tr>
+          </thead>
+          <tr ng-repeat="prodReview in listProdReviewBySites.rows">
+            <td>
+              {#prodReview.partno#}
+            </td>
+            <td>
+              <a href="manproducts.php?action=view&lang=en&partno={#prodReview.partno#}" target="_BLANK" >{#prodReview.title#}</a>
+            </td>
+            <td>
+              {#prodReview.remarks#}
+            </td>
+            <td>
+              <span class="badge bg-danger">{#prodReview.type#}</span>
+            </td>
+          </tr>
+        </table>
+        
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</script>

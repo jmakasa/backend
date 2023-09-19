@@ -1,0 +1,178 @@
+/**
+* login page
+**/
+.block-login {
+	margin: auto;
+}
+
+* {
+	-webkit-border-radius: 0 !important;
+	   -moz-border-radius: 0 !important;
+			border-radius: 0 !important;
+  }
+
+/*******************
+* common css 
+*******************/
+.icon-green {
+	color: green;
+}
+
+.icon-grey {
+	color: rgb(73, 73, 73);
+}
+
+.icon-red {
+	color: red;
+}
+
+.icon-blue {
+	color: blue;
+}
+
+.icon-yellow {
+	color: yellow;
+}
+
+.icon-fs-xs {
+	font-size: 14px;
+}
+
+.icon-fs-md {
+	font-size: 20px;
+}
+
+.icon-fs-lg {
+	font-size: 28px;
+}
+
+.btn-orange {
+	color: rgb(29, 0, 77) !important;
+	background-color: #fcdc86 !important;
+	border-color: #de8033 !important;
+}
+
+.btn-orange:hover {
+	color: #fff;
+	background-color: #ffbc7e !important;
+	border-color: #faac63 !important;
+}
+
+.btn-check:focus+.btn-orange,
+.btn-orange:focus {
+	color: #fff;
+	background-color: #ff9737;
+	border-color: #faac63;
+	box-shadow: 0 0 0 .25rem rgba(49, 132, 253, .5)
+}
+
+.btn-check:active+.btn-orange,
+.btn-check:checked+.btn-orange,
+.btn-orange.active,
+.btn-orange:active,
+.show>.btn-orange.dropdown-toggle {
+	color: #fff;
+	background-color: #faac63;
+	border-color: #faac63
+}
+
+.btn-check:active+.btn-orange:focus,
+.btn-check:checked+.btn-orange:focus,
+.btn-orange.active:focus,
+.btn-orange:active:focus,
+.show>.btn-orange.dropdown-toggle:focus {
+	box-shadow: 0 0 0 .25rem rgba(253, 148, 49, 0.5)
+}
+
+.btn-orange.disabled,
+.btn-orange:disabled {
+	color: #fff;
+	background-color: #de8033;
+	border-color: #de8033
+}
+
+.border-orange{
+	border-color:#d4a375!important;
+}
+
+/* active or inactive */
+.checkmark {
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+	-ms-transform: rotate(45deg);
+	/* IE 9 */
+	-webkit-transform: rotate(45deg);
+	/* Chrome, Safari, Opera */
+	transform: rotate(45deg);
+}
+
+.checkmark_circle {
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	background-color: green;
+	border-radius: 11px;
+	left: 0;
+	top: 0;
+}
+
+.checkmark_stem {
+	position: absolute;
+	width: 3px;
+	height: 9px;
+	background-color: #fff;
+	right: 8px;
+	bottom: 6px;
+}
+
+.checkmark_kick {
+	position: absolute;
+	width: 5px;
+	height: 3px;
+	background-color: #fff;
+	left: 9px;
+	top: 13px;
+}
+
+.checkmark_circle_inactive {
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	background-color: grey;
+	border-radius: 11px;
+	left: 0;
+	top: 0;
+}
+
+.checkmark_stem_inactive {
+	position: absolute;
+	width: 2px;
+	height: 10px;
+	background-color: #fff;
+	left: 10px;
+	top: 6px;
+}
+
+.checkmark_kick_inactive {
+	position: absolute;
+	width: 10px;
+	height: 2px;
+	background-color: #fff;
+	left: 6px;
+	top: 10px;
+}
+
+.toolbar_h1 {
+	height: 35px
+}
+
+.toolbar_h2 {
+	height: 70px
+}
+/** blog **/
+.figureClass .blog_image_caption{text-align: center;color: #666;}
+/** EDITOR **/
+.note-editor.note-frame.fullscreen {
+	background-color: white;
+	}

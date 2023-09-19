@@ -1,0 +1,150 @@
+<script type="text/ng-template" id="ticketDetailDirective">
+  <div class="card border-orange">
+    <div class="card-header bg-orange">
+        Ticket #{#config.id#} 
+    </div>
+    <div class="card-body">
+        
+      <a href="javascript:void(0);" ng-click="editTicket()" class="btn btn-sm btn-orange float-end"><i class="bi bi-pencil-fill"></i>&nbsp;Edit</a>
+
+        <h5 class="card-title">{#ticketDetails.subject#}</h5>
+        <table class="table">
+            <tr>
+                <td>Status:</td>
+                <td><span
+                    data-ng-bind-html="ticketDetails.status|ticketStatus|trustAsHtml"></span></td>
+                <td>Start Date:</td>
+                <td><span ng-if='ticketDetails.start_datetime != "1970-01-01T00:00:00.000Z"'>{#ticketDetails.start_datetime|date:'yyyy-MM-dd'#}</span></td>
+            </tr>
+            <tr>
+                <td>Assignee:</td>
+                <td>{#ticketDetails.assignee#}</td>
+                <td>Due Date:</td>
+                <td><span ng-show="ticketDetails.due_datetime">{#ticketDetails.due_datetime|date:'yyyy-MM-dd'#}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Assignor:</td>
+                <td>{#ticketDetails.assignor#}</td>
+                <td>Type:</td>
+                <td>{#ticketDetails.type#}</td>
+            </tr>
+            <tr>
+                <td>Sender Email:</td>
+                <td>{#ticketDetails.from_email#}</td>
+                <td>Created Date:</td>
+                <td>{#ticketDetails.created_at|date:'yyyy/MM/dd HH:m:s'#}</td>
+            </tr>
+            <tr>
+                <td>Sender Firstname:</td>
+                <td>{#ticketDetails.from_firstname#}</td>
+                <td>Sender Lastname:</td>
+                <td>{#ticketDetails.from_lastname#}</td>
+            </tr>
+            <tr>
+                <td>Subject:</td>
+                <td colspan='3'>{#ticketDetails.subject#}</td>
+            </tr>
+            <tr>
+                <td>Content:</td>
+                <td colspan='3'>
+                    <ng-bind-html ng-bind-html="ticketDetails.content | trustAsHtml"></ng-bind-html>
+                </td>
+            </tr>
+            <tr ng-show="ticketDetails.attachment">
+                <td colspan='4'>Attachments: <img src="{#config.email_attachment_path#}{#ticketDetails.attachment#}" class="img-thumbnail"
+                  alt="{#ticketDetails.attachment#}" ng-click="showAttachment(ticketDetails.attachment)" style="width:200px"></td>
+            </tr>
+            <tr class="bg-warning p-2 text-dark bg-opacity-15">
+                <td>Ticket Description:</td>
+                <td colspan='3'>
+                    <ng-bind-html ng-bind-html="ticketDetails.ticket_desc | trustAsHtml"></ng-bind-html>
+                </td>
+            </tr>
+            
+        </table>
+        <div class="row">
+          <div class="col col-6">
+              <h5>Notes<a href="javascript:void(0);" ng-click="openAddTicketNote(ticketDetails.id)" class="btn btn-sm btn-orange  mx-1"><i class="bi bi-plus"></i>&nbsp;Add</a></h5>
+          </div>
+          <div class="col col-6">
+              <span class="float-end">
+                  <button type="button" class="btn btn-primary btn-sm mb-1"
+                      ng-click="showAllThreadCollapse()" ng-if="ticketNotes.length != 0">Show All Notes</button>
+                  <button type="button" class="btn btn-secondary btn-sm mb-1"
+                      ng-click="hideAllThreadCollapse()" ng-if="ticketNotes.length != 0">Hide All Notes</button>
+              </span>
+          </div>
+        </div>
+        <div class="accordion" id="accordionExample">
+          <div ng-repeat="(key, note) in ticketNotes">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{#$index+1#}" aria-expanded="true" aria-controls="collapseOne">
+                  Note #{#$index+1#}   - Posted by <span
+                  class="badge bg-warning text-dark mx-1">{#note.created_by#}</span> At {#note.created_at | date:'yyyy-MM-dd HH:mm:ss'#}
+                </button>
+              </h2>
+              <div id="collapse{#$index+1#}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <ng-bind-html ng-bind-html="note.content | trustAsHtml"></ng-bind-html>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</script>
+
+
+
+<script type="text/ng-template" id="ticketThreadsDirective">
+  
+      <!-- {{-- thread list --}} -->
+      <div class="row">
+          <div class="col col-6">
+              <h4>All Threads</h4>
+          </div>
+          <div class="col col-6">
+              <span class="float-end">
+                  <button type="button" class="btn btn-primary btn-sm mb-1" ng-if="ticketThreads.length != 0"
+                      ng-click="showAllThreadCollapse()">Show All Collapse</button>
+                  <button type="button" class="btn btn-secondary btn-sm mb-1" ng-if="ticketThreads.length != 0"
+                      ng-click="hideAllThreadCollapse()">Hide All Collapse</button>
+              </span>
+          </div>
+      </div>
+      <div class="accordion" id="accordionExample">
+          <div class="accordion-item" ng-repeat="thread in ticketThreads">
+              <h4 class="accordion-header d-grid gap-2" id="headingOne">
+                  <button class="accordion-button" style="width:100%" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#collapse{#thread.id#}"
+                      aria-expanded="true" aria-controls="collapse{#thread.id#}">
+                      <i class="bi bi-paperclip" ng-if="thread.attachment_cnt"></i> {#$index+1#} |
+                      &nbsp;<span
+                          class="badge bg-warning text-dark">{#thread.from_email#}</span>&nbsp;Posted {#thread.created_at| date:'yyyy-MM-dd HH:mm:ss'#}&nbsp;|&nbsp;<span
+                          data-ng-bind-html="thread.created_at| date:'yyyy-MM-dd HH:mm:ss' | duration_time|trustAsHtml"></span>&nbsp;
+                  </button>
+              </h4>
+              <div id="collapse{#thread.id#}" class="accordion-collapse collapse hide"
+                  aria-labelledby="headingOne">
+                  <div class="accordion-body">
+                      <div class="row">
+                          <div class="col">
+                              <span data-ng-bind-html="thread.content|trustAsHtml"></span>
+                          </div>
+                      </div>
+                      <div class="row" ng-if="thread.attachment_cnt">
+                          <hr>
+                          <h5>Attachments :</h5>
+                          <div class="col col-2" ng-repeat="file in thread.attachment|split_string">
+                              <img src="{#config.attachment_path#}{#file#}" class="img-thumbnail"
+                                  alt="{#file#}" ng-click="showAttachment(file)">
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+</script>

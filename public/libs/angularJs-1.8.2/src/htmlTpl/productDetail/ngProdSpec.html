@@ -1,0 +1,72 @@
+<!--   <spec-left-directive></spec-left-directive>-->
+<script type="text/ng-template" id="specLeftDirective">
+  <ul class="easyui-tree" id="spec_group_list"></ul>
+</script>
+
+
+<!--   <spec-list-directive></spec-list-directive>-->
+<script type="text/ng-template" id="specListDirective">
+    <div id="divSpecHtml">
+      <div id="p_spechtml" title="Spec HTML" class="easyui-panel" data-options="tools:[{
+        iconCls:'icon-edit',
+        handler:function(){editspechtml()}
+      }]" style="margin-left:5px;width:650px;height:650px;float:left">
+      </div>
+    </div>
+    <div id="divContentList">
+      <table class="easyui-datagrid" id="contentList"></table>
+    </div>
+    <div id="divSpecList">
+      <table class="easyui-datagrid" id="specList"></table>
+    </div>
+  <div id="specImageToolbar">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-plus" plain="true"
+      onclick="editimage('Specification','-1')">Add</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-pencil" plain="true"
+      onclick="editimage('Specification','0')">Edit</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-trash" plain="true"
+      onclick="delimage('Specification', '#specImageList')">Delete</a>
+  </div>
+  <div id="spectoolbar">
+    <a id="btaddspec" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-plus" plain="true"
+      onclick="addspec()">Add Spec</a>
+    <a id="btdelspec" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-trash" plain="true"
+      onclick="delspec()">Delete Spec</a>
+    <a href="javascript:void(0)" id="bteditspechtml" class="easyui-linkbutton" iconCls="icon-pencil" plain="true"
+      onclick="editspechtml()">Edit Special Spec</a>
+      <a href="javascript:void(0)" class="easyui-linkbutton" ng-click="submitNewSpecGroup()"  style="width:80px">ngSave</a>
+  </div>
+</script>
+
+<!--   <product-reviews-directive></product-reviews-directive>-->
+<script type="text/ng-template" id="productSpecDirective">
+  <table id="productReviewsList" class="easyui-datagrid" title="Product Reviews - {#config.partno#} {#config.lang#}"></table>
+  <div id='productReviewsList_toolbar'>
+    <a href="javascript:void(0)" class="btn btn-sm btn-orange"
+      ng-click="deleteProductReviews()"><i class="bi bi-trash me-1"></i>Delete Review</a>
+      <a href="javascript:void(0)" class="btn btn-sm btn-orange" title="Reload Product Review List"
+      ng-click="reloadProdReviewList()"><i class="bi bi-arrow-repeat"></i></a>
+  </div>
+  <!-- Modal -->
+<div class="modal fade" id="deleteProdReviewModal">
+  <div class="modal-dialog">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h6 class="modal-title" id="exampleModalLabel">Delete Product Review</h6>
+     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+     </button>
+    </div>
+    <div class="modal-body">
+     <h6>Are you sure you want to delete?</h6>
+     <p>Title : {#addProdReviewsData.title#}</p>
+
+   </div>
+   <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+     <button type="button" class="btn btn-danger" ng-click="submitDelProdReviews()">Yes</button>
+    </div>
+   </div>
+  </div>
+ </div>
+</script>
