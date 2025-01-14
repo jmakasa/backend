@@ -16,8 +16,8 @@ class SftpController extends Controller
      */
     public function list()
     {
-
-        $allfiles = Storage::disk('ftp_uk')->allFiles("/uploads/");
+        //
+        $allfiles = Storage::disk('ftp_uk')->allFiles('/');
         print_r($allfiles);
 
     }

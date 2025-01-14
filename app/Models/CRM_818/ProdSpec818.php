@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\CRM_818;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\Validatable;
 use App\Traits\CreatedUpdatedBy;
 
-class ProdSpec extends Model
+class ProdSpec818 extends Model
 {
     use HasFactory;
 //    use UuidForKey;
     use CreatedUpdatedBy;
     use Validatable;
-
+    protected $connection = 'mysql_818';
     const STATUS_ACTIVE = "Active";
     const STATUS_INACTIVE = "Inactive";
     const TYPE_PRESS_RELEASE = "Press Release";
@@ -62,6 +62,5 @@ class ProdSpec extends Model
         return $this->belongsTo('App\Models\ProdSpecGroups', 'group_id');
     }
     
-
 
 }

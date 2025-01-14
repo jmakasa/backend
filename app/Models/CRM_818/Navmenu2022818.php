@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\CRM_818;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Validatable;
 use App\Traits\CreatedUpdatedBy;
 
-class Navmenu2022 extends Model
+class Navmenu2022818 extends Model
 {
     use HasFactory;    
     use CreatedUpdatedBy;
     use Validatable;
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
-
+    protected $connection = 'mysql_818';
     protected $table = '2022_navmenu';
 
     protected $fillable = ['id','parent_id','parent','submenu','has_child','smenu','seqno','title','lang',

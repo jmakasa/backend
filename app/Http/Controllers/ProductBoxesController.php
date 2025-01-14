@@ -7,6 +7,7 @@ use App\Models\OldprodlistBox;
 use App\Models\ProdlistBoxes;
 use App\Models\ProductRelatedBoxes;
 use App\Models\Images;
+use App\Models\CRM_818\ProdlistBoxes818;
 
 use App\Services\ProductService;
 
@@ -17,6 +18,7 @@ use Illuminate\Support\Carbon;
 
 use Illuminate\Validation\ValidationException;
 
+
 class ProductBoxesController extends Controller
 {
     public function __construct()
@@ -26,7 +28,7 @@ class ProductBoxesController extends Controller
 
     public function getBoxDataWithImage($locale, $boxes)
     {
-        logger()->debug(" getBoxDataWithImage : all boxno " . var_export($boxes, true));
+       // logger()->debug(" getBoxDataWithImage : all boxno " . var_export($boxes, true));
         $returnData['boxes'] = [];
         $hasImage = false;
         $cnt = 0;
@@ -35,7 +37,7 @@ class ProductBoxesController extends Controller
             // get box with feature image
             // logger()->debug(" showOne : boxno " . var_export($boxno, true));
             $boxData = DB::table('prodlist_boxes as pb')
-                ->select('pb.productcode AS partno', 'pb.boxno', 'm.submenu')
+                ->select('pb.productcode AS partno', 'pb.boxno', 'm.parent','m.submenu','m.id as mId')
                 ->leftJoin('2022_navmenu as m', function ($join) {
                     $join->on('m.id', '=', 'pb.menucat');
                 })
@@ -44,54 +46,55 @@ class ProductBoxesController extends Controller
                 ->where('pb.lang', $locale)
                 ->orderBy("pb.seqno")
                 ->get()->toArray();
-                
+
             foreach ($boxData as $key => $d) {
-              //  $aryImage = Images::select('partno', 'docdir', 'docname', 'ctype')->where("partno", $d->partno)->where("ctype", "gallery")->where('docname', 'not like', "%_g00%")->where("docname", 'like', '%g0%')->orderBy("seqno")->first()->toArray();
-              $aryImage = Images::select('partno', 'docdir', 'docname', 'ctype')->where("partno", $d->partno)->where("ctype", "gallery")->where('listpic',1)->first()->toArray();
-if (!in_array($d->partno,$aryPartno)){
-    $aryPartno[] = $d->partno;
-                $returnData['boxes'][$cnt]['partno'] = $d->partno;
-                $returnData['boxes'][$cnt]['boxno'] = $d->boxno;
-                $returnData['boxes'][$cnt]['submenu'] = $d->submenu;
-                if ($aryImage) {
+               // $image = Images::select('partno', 'docdir', 'docname', 'ctype')->where("partno", $d->partno)->where("ctype", "gallery")->where('docname', 'not like', "%_g00%")->where("docname", 'like', '%g0%')->orderBy("seqno")->first();
+               $image = Images::select('partno', 'docdir', 'docname', 'ctype')->where("partno", $d->partno)->where("ctype", "gallery")->where('listpic',1)->first();
+                if ($image){
+                    $aryImage = $image->toArray();
+                if (!in_array($d->partno, $aryPartno)) {
+                    $aryPartno[] = $d->partno;
+                    $returnData['boxes'][$cnt]['partno'] = $d->partno;
+                    $returnData['boxes'][$cnt]['boxno'] = $d->boxno;
+                    $returnData['boxes'][$cnt]['submenu'] = $d->submenu;
+                    if ($aryImage) {
 
-                    $returnData['boxes'][$cnt]['docdir'] = $aryImage['docdir'];
-                    $returnData['boxes'][$cnt]['docname'] = $aryImage['docname'];
-                    $returnData['boxes'][$cnt]['ctype'] = $aryImage['ctype'];
-
-                } 
-            }
+                        $returnData['boxes'][$cnt]['docdir'] = $aryImage['docdir'];
+                        $returnData['boxes'][$cnt]['docname'] = $aryImage['docname'];
+                        $returnData['boxes'][$cnt]['ctype'] = $aryImage['ctype'];
+                    }
+                }
                 $cnt++;
             }
+            }
         }
-
-        logger()->debug(" getBoxDataWithImage : boxData  " . var_export($returnData, true));
+        // logger()->debug(" getBoxDataWithImage : boxData  " . var_export($returnData, true));
         return $returnData['boxes'];
     }
 
     public function getRelatedBoxesCard($menucat, $boxno, $locale)
     {
+        logger()->debug(" getRelatedBoxesCard : data $menucat, $boxno, $locale ");
         $hasImage = false;
         // get prodlist_boxes with menucat, boxno , locale
         $boxData = DB::table('prodlist_boxes as pb')
-            ->select('pb.productcode AS partno', 'pb.boxno', 'm.submenu')
-            ->leftJoin('product as p', function ($join) {
+            ->select('pb.productcode AS partno', 'pb.boxno', 'p.title', 'p.name', 'p.pstatus')
+            ->leftJoin('products as p', function ($join) {
                 $join->on('p.partno', '=', 'pb.productcode');
             })
             ->where('pb.menucat', $menucat)
             ->where('pb.boxno', $boxno)
-            ->where('pb.lang', $locale)
+            ->where('p.lang', $locale)
             ->orderBy("pb.seqno")
             ->get()->toArray();
+            logger()->debug(" getRelatedBoxesCard : boxData 1 " . var_export($boxData, true));
         foreach ($boxData as $key => $d) {
-            
             //$aryImage = Images::select('partno', 'docdir', 'docname', 'ctype')->where("partno", $d->partno)->where("ctype", "gallery")->where('docname', 'not like', "%_g00%")->where("docname", 'like', '%g0%')->first();
             $aryImage = Images::select('partno', 'docdir', 'docname', 'ctype')->where("partno", $d->partno)->where("ctype", "gallery")->where('listpic',1)->first();
-           
             if ($aryImage) {
                 $hasImage = true;
                 $image = $aryImage->toArray();
-                if (!$image['docdir']){
+                if (!$image['docdir']) {
                     $image['docdir'] = 'img/product/common/gallery/00/';
                 }
                 $boxData[$key]->image = $image;
@@ -99,8 +102,10 @@ if (!in_array($d->partno,$aryPartno)){
 
                 $boxData[$key]->image = [];
             }
+            //  logger()->debug(" getRelatedBoxesCard : boxData " . var_export($boxData[$key], true));
+            //  $boxData[$key]->box_item = $boxData[$key]->count();
         }
-        logger()->debug(" getRelatedBoxesCard : boxData " . var_export($boxData, true));
+        logger()->debug(" getRelatedBoxesCard : boxData 2 " . var_export($boxData, true));
         return $boxData;
     }
 
@@ -341,11 +346,12 @@ if (!in_array($d->partno,$aryPartno)){
     }
 
 
-    public function apiBoxData(Request $request)
+    public function apiBoxData($locale, Request $request)
     {
 
         Logger()->error(" apiBoxData : request DATA - " . var_export($request->all(), true));
-        if ($request->get('boxno') && $request->get('lang')) {
+        if ($request->get('bId')) {
+
             if ($request->get('webmenu') == "old") {
                 // insert into oldprodlist_box 
                 //   $pl_table = " oldprodlist_box ";
@@ -396,15 +402,22 @@ if (!in_array($d->partno,$aryPartno)){
                     'status' => $request->input("status"),
                     'box_name' => $request->input("box_name"),
                     'box_seqno' => $request->input("box_seqno"),
-
+                ]);
+                ProdlistBoxes818::whereId($request->get('id'))
+                ->update([
+                    'status' => $request->input("status"),
+                    'box_name' => $request->input("box_name"),
+                    'box_seqno' => $request->input("box_seqno"),
                 ]);
             }
+
+
 
             if ($update) {
                 logger()->debug(" boxData - update data : SAVED" . var_export($request->all(), true));
                 return response()->json(['result' => true, 'data' => $update]);
             } else {
-                logger()->error(" boxData - update data : NO inserted" . var_export($request->all(), true));
+                logger()->error(" boxData - update data : NO inserted " . var_export($request->all(), true));
                 return response()->json(['result' => false]);
             }
         } else {
@@ -426,9 +439,11 @@ if (!in_array($d->partno,$aryPartno)){
             //    $pl_table = " prodlist_boxes ";
             $box = ProdlistBoxes::whereId($request->get('boxid'))->first();
         }
-        $box->status = $request->get('status');
+        if ($request->get('status')){
+            $box->status = $request->get('status');
+        }
+        
         $box->seqno = $request->get('seqno');
-
 
         // call productsCtrl to update pstatus
         $updatePstatus = $producService->updatePstatus($request->get('id'), $request->get('pstatus'), $request->get('new_pstatus'), $request->get('eol_comment'));
@@ -472,23 +487,41 @@ if (!in_array($d->partno,$aryPartno)){
                 // insert into new prodlist_box 
                 //    $pl_table = " prodlist_boxes ";
                 $newBox = new ProdlistBoxes;
+                $newBox818 = new ProdlistBoxes818;
                 $boxData = ProdlistBoxes::where('lang', $request->get('lang'))
                     ->where('menucat', strval(sprintf("%04d", $request->get('menucat'))));
+                $boxData818 = ProdlistBoxes818::where('lang', $request->get('lang'))
+                    ->where('menucat', strval(sprintf("%04d", $request->get('menucat'))));
                 // find the max seqno in this menucat
-                $getMaxBoxSeqno = ProdlistBoxes::where('menucat', strval(sprintf("%04d", $request->get('menucat'))))->max("box_seqno");
+                $getMaxBoxSeqno = ProdlistBoxes::where('menucat', strval(sprintf("%04d", $request->get('menucat'))))->min("box_seqno");
                 $newBoxSeqno = strval(sprintf("%04d", $getMaxBoxSeqno + 1));
                 logger()->debug(" addProductToBox - getMaxId : " . var_export($newBoxSeqno, true));
             }
             if ($request->get('target_boxno') == 'NEW') {
                 //where('boxno', $request->get('boxno'))->
+
+                // reset box_seqno
+                $this->updateBoxSeqno(sprintf("%04d", $request->get('menucat')), 'add');
+
                 // create new record
                 $newBox->boxno = mt_rand(1, 999);
                 $newBox->product_id = $request->get('product_id');
                 $newBox->productcode = $request->get('partno');
+                $newBox->box_name = $request->get('partno');
                 $newBox->lang = $request->get('lang');
                 $newBox->menucat = sprintf("%04d", $request->get('menucat'));
-                $newBox->box_seqno = $newBoxSeqno;
-                $newBox->seqno = '0000';
+                $newBox->box_seqno = '0010';
+                $newBox->seqno = '0010';
+
+                $newBox818->boxno = mt_rand(1, 999);
+                $newBox818->product_id = $request->get('product_id');
+                $newBox818->productcode = $request->get('partno');
+                $newBox818->box_name = $request->get('partno');
+                $newBox818->lang = $request->get('lang');
+                $newBox818->menucat = sprintf("%04d", $request->get('menucat'));
+                $newBox818->box_seqno = '0010';
+                $newBox818->seqno = '0010';
+
             } else {
                 //where('boxno', $request->get('boxno'))->
                 // duplicate record
@@ -499,8 +532,17 @@ if (!in_array($d->partno,$aryPartno)){
                 $newBox->productcode = $request->get('partno');
                 $newBox->seqno = sprintf("%04d", (int)$newBox->seqno + 1);
                 $newBox->created_at = Carbon::now();
+
+                $targetBox = $boxData818->where('boxno', $request->get('target_boxno'))->first();
+                $newBox818 = $targetBox->replicate();
+                $newBox818->product_id = $request->get('product_id');
+                $newBox818->productcode = $request->get('partno');
+                $newBox818->seqno = sprintf("%04d", (int)$newBox->seqno + 1);
+                $newBox818->created_at = Carbon::now();
+
+
             }
-            if ($newBox->save()) {
+            if ($newBox->save() && $newBox818->save()) {
                 logger()->debug(" addProductToBox - insert data : SAVED" . var_export($request->all(), true));
                 return response()->json(['result' => true, 'data' => $newBox]);
             } else {
@@ -530,7 +572,12 @@ if (!in_array($d->partno,$aryPartno)){
             if ($request->get('webmenu') == "old") {
                 return response()->json(['result' => OldprodlistBox::whereId($request->get('id'))->firstOrfail()->delete()]);
             } else {
-                return response()->json(['result' => ProdlistBoxes::whereId($request->get('id'))->firstOrfail()->delete()]);
+
+                if (ProdlistBoxes::whereId($request->get('id'))->firstOrfail()->delete()
+                    && ProdlistBoxes818::whereId($request->get('id'))->firstOrfail()->delete()){
+                    return response()->json(['result' => true]);
+                }
+                
             }
         } catch (ValidationException $ex) {
             return $ex->validator->errors();
@@ -552,9 +599,85 @@ if (!in_array($d->partno,$aryPartno)){
                 }
             }
             return true;
-
         }
     }
+
+    public function updateSeqnoFromBox(Request $request){
+        $this->validate(
+            $request,
+            [
+                'target_boxno' => 'required',
+                'target_product_id' => 'required',
+                'source_product_id' => 'required',
+                'source_boxno' => 'required',
+                'webmenu' => 'required',
+                'menucat' => 'required',
+            ],
+            [
+                'target_boxno.required' => 'Target Boxno is required.',
+                'target_product_id.required' => 'Target Product ID is required.',
+                'source_product_id.required' => 'Source Product ID is required.',
+                'source_boxno.required' => 'Source Boxno is required.',
+                'webmenu.required' => 'webmenu is required.',
+                'menucat.required' => 'menucat is required.',
+            ]
+        );
+            // boxes number 
+            // after product id
+            // add new seq from after product id
+
+              $menucat = $request->get('menucat');
+              // 10.5
+              $box = ProdlistBoxes::where('product_id',$request->get('target_product_id'))
+                            ->where("boxno", $request->get('target_boxno'))
+                            ->where("menucat", $menucat)
+                            ->orderBy('seqno','asc')
+                            ->first();
+
+              // 8.18
+            //   $boxes818 = ProdlistBoxes818::where('product_id',$request->get('target_product_id'))
+            //                 ->where("boxno", $request->get('target_boxno'))
+            //                 ->where("menucat", $menucat)
+            //                 ->get();
+            logger()->debug(" addProductToBox - boxes data : " . var_export($box, true));
+                $seq = (int) $box->seqno;
+                $seq += 1;
+                $newseq = sprintf("%04d", $seq);
+        
+                if ($request->get('source_boxno') == $request->get('target_boxno')) {
+                    // update seqno = newseqno
+                    ProdlistBoxes::where('product_id',$request->get('source_product_id'))
+                    ->where("boxno", $request->get('target_boxno'))
+                    ->where("menucat", $menucat)
+                    ->update(['seqno'=>$newseq]);
+                    ProdlistBoxes818::where('product_id',$request->get('source_product_id'))
+                    ->where("boxno", $request->get('target_boxno'))
+                    ->where("menucat", $menucat)
+                    ->update(['seqno'=>$newseq]);
+                } else {
+                    // update seqno = newseqno & boxno = target_boxno
+                    ProdlistBoxes::where('product_id',$request->get('source_product_id'))
+                    ->where("boxno", $request->get('source_boxno'))
+                    ->where("menucat", $menucat)
+                    ->update(['seqno'=>$newseq,'boxno'=>$request->get('target_boxno')]);
+                    ProdlistBoxes818::where('product_id',$request->get('source_product_id'))
+                    ->where("boxno", $request->get('source_boxno'))
+                    ->where("menucat", $menucat)
+                    ->update(['seqno'=>$newseq,'boxno'=>$request->get('target_boxno')]);
+                }
+
+            
+                $ProductService = NEW ProductService();
+                if ($ProductService->resetSeqnoWithinBox($request->get('target_boxno'), $menucat)) {
+                    logger()->debug(" addProductToBox - insert data : SAVED" . var_export($request->all(), true));
+                    return response()->json(['result' => true]);
+                } else {
+                    logger()->error(" addProductToBox - insert data : NO inserted" . var_export($request->all(), true));
+                    return response()->json(['result' => false]);
+                }
+
+    }
+    
 
     public function updateBoxesIsSelected($locale,Request $request){
         try {

@@ -6,33 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
     <!-- Scripts -->
-    <script src="{{ asset('public/js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <!-- library -->
-    <script src="{{ asset('public/js/ckeditor/ckeditor.js') }}"></script>
-    <script src="{{ asset('public/libs/easyui/jquery.easyui.min.js') }}"></script>
-    <script src="{{ asset('public/libs/easyui/jquery.easyui.min.js') }}"></script>
-    <script src="{{ asset('public/libs/easyui/extension/datagrid-dnd.js') }}"></script>
-    <script src="{{ asset('public/libs/easyui/locale/easyui-lang-en.js') }}"></script>
-    <script src="{{ asset('public/libs/easyui/extension/datagrid-scrollview.js') }}"></script>
-    <script src="{{ asset('public/libs/easyui/extension/datagrid-groupview.js') }}"></script>
-    <script src="{{ asset('public/libs/summernote/summernote-lite.min.js') }}"></script>
-    <script src="{{ asset('public/libs/summernote/lang/summernote-zh-TW.min.js') }}"></script>
-    <script src="{{ asset('public/libs/summernote/summernote-image-attributes.js?v=1') }}"></script>
-    <script src="{{ asset('public/libs/summernote/summernote-image-attributes-en-us.js') }}"></script>
+    <script src="{{ asset('js/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('js/easyui-1.10.2/jquery.easyui.min.js') }}"></script>
     <!-- angularJs -->
-    <script src="{{ asset('public/libs/angularJs-1.8.2/angular.min.js') }}"></script>
-    <script src="{{ asset('public/libs/angularJs-1.8.2/src/app.js') }}"></script>
-    <script src="{{ asset('public/libs/angularJs-1.8.2/src/factory/dataFactory.js') }}"></script>
-    @stack('extra-js')
+    <script src="{{ asset('js/angularJs-1.8.2/angular.min.js') }}"></script>
+    <script src="{{ asset('js/angularJs-1.8.2/src/app.js') }}"></script>
+    <script src="{{ asset('js/angularJs-1.8.2/src/factory/dataFactory.js') }}"></script>
+    <script src="{{ asset('js/angularJs-1.8.2/src/ctrl/ProductCtrl.js') }}"></script>
+
+    
 
     <!-- Styles -->
-    <link href="{{ asset('public/css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/libs/easyui/themes/default/easyui.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/libs/easyui/themes/icon.css') }}" rel="stylesheet">
-
-    @stack('extra-css')
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('js/easyui-1.10.2/themes/default/easyui.css') }}" rel="stylesheet">
+    <link href="{{ asset('js/easyui-1.10.2/themes/icon.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -42,7 +33,7 @@
         <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ route('admin.dashboard',app()->getLocale()) }}">
-                    {{ config('app.name', 'Laravel') }} - admin
+                    {{ config('app.name', 'Laravel') }} - admin {{ env('DOCDIR') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -71,19 +62,6 @@
                             @endif
 -->
                         @else
-                        <!-- Employees -->
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ __('general.employees.employee') }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('admin.employees.viewList',app()->getLocale()) }}">
-                                    {{ __('general.employees.view_list') }}
-                                </a>
-                            </div>
-
-                        </li> <!-- END Products -->
                         <!-- Products -->
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

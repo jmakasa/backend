@@ -19,14 +19,17 @@ class FtpService
     {
         $this->ftpHostlist = [
             'akasa2206_uk' => [
-                'host' => env("FTP_UK_HOST", 'ftp.akasa.co.uk'),
+                //213.175.200.150 ftp.akasa.co.uk
+                'host' => env("FTP_UK_HOST", '213.175.200.150'),
                 'user' => env("FTP_UK_USER", 'akasaweb@akasa.co.uk'),
                 //'pass' => 'gzg81182$$UK23',
                 'pass' => env("FTP_UK_PASS", 'gzg81182!?UK23'),
                 'rootpath' => env("FTP_UK_ROOTPATH", ''),
             ],
             'akasa2206_tw' => [
-                'host' => 'akasa.site.aplus.net',
+             //   'host' => 'akasa.site.aplus.net','64.29.151.221'
+             'host' => env("FTP_TW_HOST", '64.29.151.221'),
+             
                 'user' => 'akasa.site.aplus.net',
                 'pass' => 'gzg81182',
                 'rootpath' => '/akasa.com.tw/public'
@@ -39,7 +42,10 @@ class FtpService
             ],
         ];
         $this->ftpHost = $this->ftpHostlist[$requestServer];
-        $this->connection  = ftp_connect($this->ftpHost['host']) or die("Unable to connect to server.");
+        Logger()->debug("FtpService : ftpHost - " . var_export($this->ftpHost, true));
+        Logger()->debug("FtpService : host - " . $this->ftpHost['host']);
+        Logger()->debug("FtpService : gethostbyname - " . gethostbyname($this->ftpHost['host']));
+        $this->connection  = ftp_connect($this->ftpHost['host'],21) or die("Unable to connect to server.");
         $this->ftpLogin = ftp_login($this->connection, $this->ftpHost['user'], $this->ftpHost['pass']);
         ftp_pasv($this->connection, true);
     }
@@ -65,7 +71,7 @@ class FtpService
     public function uploadFile($localFile, $remoteFile)
     {
         if (file_exists($localFile)){
-            if (ftp_put($this->connection, $this->ftpHost['rootpath'].$remoteFile, $localFile, FTP_ASCII)) {
+            if (ftp_put($this->connection, $this->ftpHost['rootpath'].$remoteFile, $localFile, FTP_BINARY)) {
                 return true;
             } else {
                 return false;

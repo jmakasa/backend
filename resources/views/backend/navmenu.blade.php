@@ -1,6 +1,6 @@
 <nav class="navbar navbar navbar-default navbar-fixed-top navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{{env('MARKETING_URL')}}mandashboard.php?action=view"><img src="{{ asset('public/img/akasa_logo.png') }}" /></a>
+    <a class="navbar-brand" href="mandashboard.php?action=view"><img src="{{ asset('public/img/akasa_logo.png') }}" /></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -8,28 +8,24 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item me-2">
-          <a class="nav-link" href="{{env('MARKETING_URL')}}manproducts.php?action=viewlist&webmenu=new"><i
+          <a class="nav-link" href="manproducts.php?action=viewlist&webmenu=new"><i
               class="bi bi-fan"></i>&nbsp;Products</a>
         </li>
         <li class="nav-item me-2">
-          <a class="nav-link" href="{{env('MARKETING_URL')}}manemail_contactus.php?action=list"><i class="bi bi-envelope"></i>&nbsp;Email From
+          <a class="nav-link" href="manemail_contactus.php?action=list"><i class="bi bi-envelope"></i>&nbsp;Email From
             Web</a>
         </li>
         <li class="nav-item me-2">
-          <a class="nav-link" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Enquires</a>
-        </li>
-        
-        <li class="nav-item me-2">
-          <a class="nav-link" href="{{env('MARKETING_URL')}}mankeywordlist.php?action=view"><i class="bi bi-filter"></i>&nbsp;Filter</a>
+          <a class="nav-link" href="mankeywordlist.php?action=view"><i class="bi bi-key"></i>&nbsp;Keywords</a>
         </li>
         <li class="nav-item me-2">
-          <a class="nav-link" href="{{env('MARKETING_URL')}}mannavmenu.php?action=viewlist"><i class="bi bi-menu-app"></i>&nbsp;Navmenu</a>
+          <a class="nav-link" href="mannavmenu.php?action=viewlist"><i class="bi bi-menu-app"></i>&nbsp;Navmenu</a>
         </li>
         <li class="nav-item me-2">
-          <a class="nav-link" href="{{env('MARKETING_URL')}}manblogs.php?action=viewlist"><i class="bi bi-collection"></i>&nbsp;Blog</a>
+          <a class="nav-link" href="manblogs.php?action=viewlist"><i class="bi bi-collection"></i>&nbsp;Blog</a>
         </li>
         <li class="nav-item me-2">
-          <a class="nav-link" href="{{env('MARKETING_URL')}}manupload_files.php?action=viewlist"><i class="bi bi-file-arrow-up"></i>&nbsp;Upload
+          <a class="nav-link" href="manupload_files.php?action=viewlist"><i class="bi bi-file-arrow-up"></i>&nbsp;Upload
             list</a>
         </li>
         <li class="nav-item dropdown">
@@ -87,37 +83,13 @@
       </ul>
       <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar7">
         <ul class="navbar-nav ms-auto flex-nowrap">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-grid-3x3-gap-fill"></i>&nbsp;Settings
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" onclick="exportAllMenucat()">Export All Lists
-                </a></li>
-                <a class="dropdown-item" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Exchange Rate</a>
-                <a class="dropdown-item" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Courier</a>
-                <a class="dropdown-item" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Tax Terms</a>
-                <a class="dropdown-item" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Terms &amp; Condition</a>
-                <a class="dropdown-item" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Sales Account</a>
-                <a class="dropdown-item" href="{{ URL::route('cs.viewlist', array('locale' => app()->getLocale())) }}"><i class="bi bi-envelope"></i>&nbsp;Country Code</a>
-              </ul>
-          </li>
           <li class="nav-item mt-2">
             <select class="easyui-combobox" id="main_lang"></select>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="logout.php"><i class="bi bi-lightbulb-off"></i>&nbsp;Logout</a>
           </li>
-          <li class="nav-item">
-            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();  document.getElementById('logout-form').submit();">
-              {{ __('Logout') }}
-          </a>
-        </li>
-        
 
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
         </ul>
       </div>
     </div>
@@ -125,7 +97,6 @@
   </div>
 </nav>
 <script>
-  var optLangs = "";
   $(document).ready(function () {
     $('#main_lang').combobox({
       width: 140,

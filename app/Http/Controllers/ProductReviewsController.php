@@ -6,6 +6,7 @@ use App\Models\ProductReviews;
 use App\Models\Images;
 use Exception;
 use Illuminate\Http\Request;
+use App\Services\HistoryService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\File; 
 use App\Services\FileService;
@@ -63,8 +64,7 @@ class ProductReviewsController extends Controller
         }
 
     }
-
-    /**
+ /**
      * get list of reviewsites_id
      * return json
      */
@@ -106,7 +106,6 @@ class ProductReviewsController extends Controller
             return $ex->validator->errors();
         }
     }
-
     /**
      *  add new reviews
      * 
@@ -202,6 +201,12 @@ class ProductReviewsController extends Controller
                         if ($newImage->save()){
                             Logger()->debug(" ProductReviewsController - has save images");
                             $prodReview->images_id = $newImage->id;
+                            if ($prodReview->isDirty()) {
+                                $historyService = new HistoryService;
+                                foreach ($prodReview->getDirty() as $key => $value) {
+                                    $historyService->addProductsChangeLogs($prodReview->id, $prodReview->partno, $prodReview->getTable(), $key, $prodReview->getOriginal($key), $value, 'change', $request->get('username'));
+                                }
+                            }
                             if ($prodReview->save()){
                                 $this->resetSeqno($request->get('partno'));
                                 return response()->json($prodReview->toArray());
@@ -222,6 +227,12 @@ class ProductReviewsController extends Controller
                                 'filesize' => $request->get('filesize'),
                                 'filetype' => $request->get('filetype')
                             ]);
+                            if ($prodReview->isDirty()) {
+                                $historyService = new HistoryService;
+                                foreach ($prodReview->getDirty() as $key => $value) {
+                                    $historyService->addProductsChangeLogs($prodReview->id, $prodReview->partno, $prodReview->getTable(), $key, $prodReview->getOriginal($key), $value, 'change', $request->get('username'));
+                                }
+                            }
                             if ($prodReview->save()){
                                 $this->resetSeqno($request->get('partno'));
                                 return response()->json($prodReview->toArray());
@@ -230,8 +241,15 @@ class ProductReviewsController extends Controller
                             }
                     }
 
-                } else {
+                    
 
+                } else {
+                    if ($prodReview->isDirty()) {
+                        $historyService = new HistoryService;
+                        foreach ($prodReview->getDirty() as $key => $value) {
+                            $historyService->addProductsChangeLogs($prodReview->id, $prodReview->partno, $prodReview->getTable(), $key, $prodReview->getOriginal($key), $value, 'change', $request->get('username'));
+                        }
+                    }
                     if ($prodReview->save()){
                         $this->resetSeqno($request->get('partno'));
                         return response()->json($prodReview->toArray());

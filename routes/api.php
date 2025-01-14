@@ -17,57 +17,78 @@ use App\Http\Controllers\JWTController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });*/
-// jwt.verify
-Route::group(['middleware' => 'api'], function($router) {
+
+Route::group(['middleware' => 'api'], function ($router) {
     Route::post('/register', [JWTController::class, 'register']);
     Route::post('/login', [JWTController::class, 'login']);
     Route::post('/logout', [JWTController::class, 'logout']);
     Route::post('/refresh', [JWTController::class, 'refresh']);
-    Route::post('/profile', [JWTController::class, 'profile']); 
-    
+    Route::post('/profile', [JWTController::class, 'profile']);
 });
 
-Route::middleware(['set_locale','jwt.verify'])
-->group(
-    function ($locale) {
-        Route::get('/employee/list', 'EmployeesController@viewList')->name('admin.employees.viewList');
-    });
+
+// Route::group(['middleware' => 'Cors'], function($router) {
+//     Route::get('/product/all', 'ProductsController@allProducts')->name('api.product.allProducts');
+// });
+
 
 //Route::middleware(['set_locale','jwt.verify'])
-//backend/index.php/en/api/xx
 Route::middleware(['set_locale'])
     ->group(
         function ($locale) {
-            // user 
-            
-            // end user
+            Route::post('/remote_login', 'UsersController@remoteLogin')->name('api.users.remote_login');
+            Route::post('/remote_logout', 'UsersController@remoteLogout')->name('api.users.remote_logout');
+
             Route::get('/category_list', 'CategoryController@apiCategoryList')->name('api.category.list');
-            Route::get('/2022_navmenu_list/export', 'NavmenuController@apiNavmenu2022List')->name('api.category.list');
+            Route::get('/2022_navmenu_list/export', 'NavmenuController@exportNavmenu')->name('api.navmenu.export');
             Route::get('/2022_navmenu/get/{state?}', 'NavmenuController@jsonNavmenu2022List')->name('api.navmenu.list');
             Route::post('/2022_navmenu/update', 'NavmenuController@update')->name('api.navmenu.update');
             Route::post('/2022_navmenu/create_new', 'NavmenuController@create_new')->name('api.navmenu.create_new');
             Route::get('/2022_navmenu/backendNavmenu', 'NavmenuController@backendNavmenu')->name('api.navmenu.backendNavmenu');
             Route::post('/2022_navmenu/belong_to', 'NavmenuController@getNavmenuListByPartno')->name('api.navmenu.getNavmenuListByPartno');
-            
-            
+            Route::post('/2022_navmenu/selected_filter', 'NavmenuController@getSeletedFilterList')->name('api.navmenu.getSeletedFilterList');
+            Route::post('/2022_navmenu/selected_filter/update_seqno', 'NavmenuController@updateSelectedFilterSeqno')->name('api.navmenu.getSeletedFilterList');
+
+
+
+
+
+
             Route::get('/lists_options', 'SettingsController@apiListsOptions')->name('api.listsOptions');
 
             // Blogs
             Route::post('/blogs/list', 'BlogsController@getBlogsList')->name('api.blogs.list');
+            Route::post('/blogs/tag_list', 'BlogsController@getBlogsTagList')->name('api.blogs.tag_list');
+            
             Route::post('/blogs/getone', 'BlogsController@getBlogsById')->name('api.blogs.getone');
+            Route::post('/blogs/export_list', 'BlogsController@export_list')->name('api.blogs.export_list');
+            Route::post('/blogs/export_detail', 'BlogsController@export_detail')->name('api.blogs.export_detail');
+            Route::post('/blogs/export_featured', 'BlogsController@export_featured')->name('api.blogs.export_featured');
+            Route::post('/blogs/export_one_detail', 'BlogsController@export_one_detail')->name('api.blogs.export_one_detail');
+            Route::post('/blogs/update_detail', 'BlogsController@updateDetail')->name('api.blogs.updateDetail');
+            
+            
 
             // Products
             Route::post('/product_list', 'ProductsController@apiProductLists')->name('api.product.list');
             Route::post('/product/images_list', 'ProductsController@listProductWithImage')->name('api.product.listImage');
             Route::get('/product/show_one', 'ProductsController@showOne')->name('api.product.show_one');
             Route::post('/product/generate/conf', 'ProductsController@generateSingleConf')->name('api.product.generateSingleConf');
+            Route::post('/product/generate/conf_only', 'ProductsController@generateConfOnly')->name('api.product.generateConfOnly');
+            
             Route::post('/product/generate/conf/by_menucat', 'ProductsController@generateConfByMenucat')->name('api.product.generateConfByMenucat');
             Route::get('/product/generate/conf/all', 'ProductsController@generateAllConf')->name('api.product.generateAllConf');
+            Route::get('/product/generate/conf/all_with_files', 'ProductsController@generateAllConfWithFiles')->name('api.product.generateAllConfWithFiles');
             Route::post('/product/list/by_menucat', 'ProductsController@getProductListByMenucat')->name('api.product.getProductListByMenucat');
             Route::post('/product/list/by_partno', 'ProductsController@getProductListByPartno')->name('api.product.getProductListByPartno');
             Route::post('/product/details', 'ProductsController@getProductDetailsById')->name('api.product.getProductDetailsById');
             Route::post('/product/intro/update', 'ProductsController@updateIntro')->name('api.product.updateIntro');
             Route::post('/product/main/update', 'ProductsController@updateProductDetails')->name('api.product.updateProductDetails');
+            Route::get('/product/all', 'ProductsController@allProducts')->name('api.product.allProducts');
+            Route::post('/product_tags', 'ProductsController@getProductsTagList')->name('api.product.getProductsTagList');
+            // 
+            Route::get('/product/reseqno_box', 'ProductsController@reseqnoBox')->name('api.product.allProducts');
+            
 
             // images
             Route::get('/images/get_data/{id}', 'ImagesController@getById')->name('api.images.getData');
@@ -90,94 +111,59 @@ Route::middleware(['set_locale'])
             Route::post('/boxes/related_product/add', 'ProductBoxesController@addRelatedBoxes')->name('api.boxes.addRelatedBoxes');
             Route::post('/boxes/related_product/remove', 'ProductBoxesController@removeRelatedBoxes')->name('api.boxes.removeRelatedBoxes');
             Route::post('/boxes/is_selected/update', 'ProductBoxesController@updateBoxesIsSelected')->name('api.boxes.updateBoxesIsSelected');
+            Route::post('/boxes/product_seqno/update', 'ProductBoxesController@updateSeqnoFromBox')->name('api.boxes.updateSeqnoFromBox');
+            
             
 
-             // prodlist spec
-             Route::get('/spec/lhs_tree/{partno}', 'ProductSpecController@getTreeList')->name('api.spec.getTreeList');
-             Route::post('/spec/child/list', 'ProductSpecController@getChild')->name('api.spec.get_child');
-             Route::post('/spec/group/add', 'ProductSpecController@add_group')->name('api.spec.add_group');
-             Route::get('/spec/group/get/{partno}', 'ProductSpecController@getSpecGroupByPartno')->name('api.spec.get_group');
-             
-             // web email contactus
-            Route::post('/email_contactus/list', 'WebEmailContactusController@getList')->name('api.webEmailContactus.list');
-            Route::post('/email_contactus/detail', 'WebEmailContactusController@getDetailById')->name('api.webEmailContactus.detail');
-            Route::get('/email_contactus/compose', 'WebEmailContactusController@composeEmail')->name('api.webEmailContactus.compose');
-            Route::get('/email_contactus/mailTest', 'WebEmailContactusController@mailTest')->name('api.webEmailContactus.mailTest');
 
-            // customer services
-            
-            // employees
-            Route::post('/employees/list/get', 'EmployeesController@getEmployeeList')->name('api.employees.getList');
-            Route::post('/employees/detail', 'EmployeesController@getEmployeeDetail')->name('api.employees.getDetail');
-            Route::post('/employees/edit', 'EmployeesController@editEmployee')->name('api.employees.edit');
-            Route::post('/employees/add', 'EmployeesController@addEmployee')->name('api.employees.add');
-            Route::post('/employees/del', 'EmployeesController@delEmployee')->name('api.employees.del');
-            Route::post('/employee_depts/add', 'EmployeesController@addDept')->name('api.employees.addDept');
-            Route::post('/employee_depts/edit', 'EmployeesController@editDept')->name('api.employees.editDept');
-            Route::post('/employee_depts/del', 'EmployeesController@delDept')->name('api.employees.delDept');
-            Route::post('/employees/settings', 'EmployeesController@getEmployeeSettings')->name('api.employees.settings');
-            Route::get('/employee_depts/get/{state?}', 'EmployeesController@jsonDeptsList')->name('api.employee_depts.list');
-            Route::post('/employee_depts/detail', 'EmployeesController@getEmployeeDeptsDetail')->name('api.employee_deps.detail');
-            
+            // prodlist spec
+            Route::get('/spec/lhs_tree/{partno}', 'ProductSpecController@getTreeList')->name('api.spec.getTreeList');
+            Route::post('/spec/child/list', 'ProductSpecController@getChild')->name('api.spec.get_child');
+            Route::post('/spec/group/add', 'ProductSpecController@add_group')->name('api.spec.add_group');
+            Route::get('/spec/group/get/{partno}', 'ProductSpecController@getSpecGroupByPartno')->name('api.spec.get_group');
 
             // keywords
             Route::get('/keyword/list', 'KeywordsController@list_all')->name('api.keyword.list');
-            Route::get('/keyword_types/list', 'KeywordsController@list_all_types')->name('api.keyword.list_all_types');
             Route::post('/socket/partno/get', 'KeywordsController@getSocketTypeByPartno')->name('api.keyword.getSocketTypeByPartno');
             Route::post('/socket/partno/update', 'KeywordsController@updateSocketTypeByPartno')->name('api.keyword.updateSocketTypeByPartno');
             Route::post('/keyword/partno/get', 'KeywordsController@getKeywordsByPartno')->name('api.keyword.getKeywordsByPartno');
-            
+
             // sftp
             Route::get('/sftp/list', 'SftpController@list')->name('api.sftp.list');
 
             // modify history
             Route::post('/modify/history/add', 'ModifyHistorysController@create')->name('api.modify_historys.add');
 
-            // tasks
-            Route::post('/tasks/list', 'TasksController@getList')->name('api.tasks.getList');
-            Route::post('/tasks/detail', 'TasksController@getDetailById')->name('api.tasks.getDetailById');
-            Route::get('/tasks/form/settings', 'TasksController@getFormSettings')->name('api.tasks.getFormSettings');
-            Route::post('/tasks/add', 'TasksController@addNewTask')->name('api.tasks.add_new');
-            Route::post('/tasks/detail/update', 'TasksController@updateDetail')->name('api.tasks.updateDetail');
-            // tasks cronjob
-            Route::get('/tasks/fetch_and_add', 'TasksController@fetchEmailContactus')->name('api.tasks.fetchEmailContactus');
-
-
-            // thread
-            Route::post('/threads/add', 'TaskThreadsController@addThread')->name('api.TaskThreads.add');
-            Route::post('/threads/list_by_id', 'TaskThreadsController@getThreadsByTaskId')->name('api.TaskThreads.list_id');
-            Route::post('/threads/attachment/upload', 'TaskThreadsController@uploadAttachment')->name('api.TaskThreads.uploadAttachment');
-            
-            // tickets
-            Route::post('/tickets/list', 'TicketsController@getList')->name('api.tickets.list');
-            Route::post('/tickets/recent_updated/list', 'TicketsController@getRecentUpdated')->name('api.tickets.getRecentUpdated');
-            Route::post('/tickets/detail', 'TicketsController@getDetailById')->name('api.tickets.getTasksById');
-            Route::get('/tickets/form/settings', 'TicketsController@getFormSettings')->name('api.tickets.status_list');
-            Route::post('/tickets/add', 'TicketsController@addNewTicket')->name('api.tickets.add_new');
-            Route::post('/tickets/detail/update', 'TicketsController@updateDetail')->name('api.tickets.updateDetail');
-            // tickets cronjob
-            Route::get('/tickets/fetch_and_add', 'TicketsController@fetchEmailContactus')->name('api.tickets.fetchEmailContactus');
-            Route::get('/tickets/threads/pending/send', 'TicketThreadsController@sendingPendingThreads')->name('api.TicketThreads.sendingPendingThreads');
-            // tickets thread
-            Route::post('/tickets/threads/add', 'TicketThreadsController@addThread')->name('api.TicketThreads.add');
-            Route::post('/tickets/threads/list_by_id', 'TicketThreadsController@getThreadsByTicketId')->name('api.TicketThreads.list_id');
-            Route::post('/tickets/threads/attachment/upload', 'TicketThreadsController@uploadAttachment')->name('api.TicketThreads.uploadAttachment');
-            // ticket notes
-            Route::post('/tickets/notes/add', 'NotesController@addTicketNote')->name('api.TicketNotes.add');
-            Route::post('/tickets/notes/delete', 'NotesController@deleteTicketNote')->name('api.TicketNotes.delete');
-            Route::post('/tickets/notes/list_by_id', 'NotesController@getNotesByTicketId')->name('api.TicketNotes.list_id');
-            // mentioned
-            Route::post('/mentioned/list_by_employees_id', 'MentionedController@getMentionedByEmployeesId')->name('api.mentioned.list_by_employees_id');
-            
-
-            
             // reviewsites
             Route::post('/reviewsites/list', 'ReviewsitesController@getList')->name('api.reviewsites.getList');
             Route::post('/reviewsites/add', 'ReviewsitesController@add')->name('api.reviewsites.add');
             Route::post('/reviewsites/edit', 'ReviewsitesController@edit')->name('api.reviewsites.edit');
+            Route::post('/reviewsites/delete', 'ReviewsitesController@delete')->name('api.reviewsites.delete');
             Route::get('/reviewsites/get_name/{q}', 'ReviewsitesController@getReviewsitesName')->name('api.reviewsites.getname');
             Route::post('/reviewsites/get_by_id', 'ReviewsitesController@getReviewsitesbyId')->name('api.reviewsites.get_by_id');
             Route::post('/reviewsites/export_conf', 'ReviewsitesController@exportConf')->name('api.reviewsites.export_conf');
+
+            // product ecommerce url
+            Route::post('/product/ecom_url/add', 'ProductsController@addEcommerceUrl')->name('api.product.addEcommerceUrl');
+            Route::post('/product/ecom_url/add_batch', 'ProductsController@addBatchEcommerceUrl')->name('api.product.addBatchEcommerceUrl');
+
+            Route::post('/product/ecom_url/disable', 'ProductsController@disableEcommerceUrl')->name('api.product.disableEcommerceUrl');
+            Route::post('/product/ecom_url/remove', 'ProductsController@removeEcommerceUrl')->name('api.product.removeEcommerceUrl');
+            Route::post('/product/ecom_url/list', 'ProductsController@ecommerceUrlList')->name('api.product.ecommerceUrlList');
+            Route::post('/product/ecom_url/update', 'ProductsController@updateEcommerceUrl')->name('api.product.updateEcommerceUrl');
+            Route::get('/product/ecom_url/export', 'ProductsController@exportEcommerceUrl')->name('api.product.addEcommerceUrl');
+
+            // prod spec
+            Route::post('/product/spec/update', 'ProductSpecController@updateSpec')->name('api.prodspec.updateSpec');
+            Route::post('/product/spec/is_highlight_update', 'ProductSpecController@updateIsHighlight')->name('api.prodspec.updateIsHighlight');
+            
+            // product change log
+            Route::post('/product/change_logs/list', 'ProductsController@changeLogsList')->name('api.product.changeLogsList');
+            
+
+            // top sale qty
+            Route::post('/top_sales_qty/add', 'ProductsController@addEcommerceUrl')->name('api.product.addEcommerceUrl');
+            
             
 
             //product reviews
@@ -186,13 +172,10 @@ Route::middleware(['set_locale'])
             Route::post('/product_reviews/delete', 'ProductReviewsController@delete')->name('api.product_reviews.delete');
             Route::post('/product_reviews/remove_image', 'ProductReviewsController@removeImage')->name('api.product_reviews.remove_image');
             Route::post('/product_reviews/list/by_site', 'ProductReviewsController@getListBySiteId')->name('api.product_reviews.getListBySiteId');
-            
-            
 
             // upload file file_uploads
             Route::post('/file_uploads/upload', 'FileUploadsController@uploadFile')->name('api.file_uploads.uploadFile');
-            Route::get('/file_uploads/test', 'FileUploadsController@testUploadFile')->name('api.file_uploads.testUploadFile');
-            
+
             Route::post('/file_uploads/list', 'UploadFilesController@getList')->name('api.file_uploads.getList');
             Route::post('/file_uploads/tasks/list', 'UploadFilesController@getTaskList')->name('api.file_uploads.getList');
             Route::get('/file_uploads/ftp/check/{hostname}', 'UploadFilesController@checkFtpConn')->name('api.file_uploads.checkFtpConn');
@@ -205,8 +188,23 @@ Route::middleware(['set_locale'])
             Route::get('/file_uploads/show_scheduled_tasks', 'UploadFilesController@showScheduledTasks')->name('api.file_uploads.showScheduledTasks');
             Route::get('/file_uploads/list/uploaded_datetime', 'UploadFilesController@getuploadedDatetimeByPartno')->name('api.file_uploads.getuploadedDatetimeByPartno');
             Route::post('/file_uploads/remove_uploaded_file', 'UploadFilesController@removeUploadedFile')->name('api.file_uploads.removeUploadedFile');
+
+            // sales offices
+            Route::post('/sales_offices/list', 'SalesOfficesController@getList')->name('api.sales_offices.getList');
+            Route::post('/sales_offices/export', 'SalesOfficesController@exportConf')->name('api.sales_offices.exportConf');
+            Route::post('/sales_offices/add', 'SalesOfficesController@addSalesOffice')->name('api.sales_offices.add');
+            Route::post('/sales_offices/remove_logo', 'SalesOfficesController@removeLogo')->name('api.sales_offices.removeLogo');
+            Route::post('/sales_offices/delete', 'SalesOfficesController@deleteSalesOffice')->name('api.sales_offices.delete');
+            Route::get('/sales_offices/name_list/{q}', 'SalesOfficesController@listName')->name('api.sales_offices.listName');
             
-        });
-
-
-
+            // sales monthly
+            Route::post('/sales_records/monthly_sales', 'SalesRecordsController@updateTopSalesQty')->name('api.sales_records.updateTopSalesQty');
+            Route::post('/sales_records/sales_qty', 'SalesRecordsController@getQtyList')->name('api.sales_records.getQtyList');
+            
+            /** temp use */
+            Route::get('/mbcheck', 'FileReadController@importMbcheckData')->name('api.mbcheck.importMbcheckData');
+            Route::get('/mbcheck/export_conf', 'FileReadController@exportFanlessCaseCheckConf')->name('api.mbcheck.exportFanlessCaseCheckConf');
+            Route::get('/oem_fan/read/{filename}', 'FileReadController@importOemFanlist')->name('api.oemfan.importOemFanlist');
+            Route::get('/oem_fan/export_json', 'FileReadController@exportOemDcfanJson')->name('api.oemfan.exportOemDcfanJson');
+        }
+    );

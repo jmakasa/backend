@@ -74,11 +74,6 @@ return [
         
 
     ],
-    "employees" => [
-        // menu
-        'employee' => 'Employees',
-        'view_list' => 'Employees List'
-    ],
 
     /// frontend
     "frontend" =>[

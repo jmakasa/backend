@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Keywords;
-use App\Models\KeywordTypes;
+use App\Models\Navmenu2022Filter;
 use App\Models\ProdKeywords;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +15,102 @@ class KeywordsController extends Controller
     public function __construct()
     {
         logger()->debug(Auth::user());
+    }
+
+//     public function exportFilter($locale, FileService $fileService)
+//     {
+//         // start
+//         $content = [];
+//         $aryFilterCatName=[];
+//         $aryFkey=[]
+
+//         /******************************************************************************
+//          * Socket
+//          ******************************************************************************/
+//         /*
+//         $content[] ="[SOCKET TYPE]\n";
+//         $socketAllowIn = $this->getAllowMenucat([4,5]);
+//         $aryFkey[] = 'SOCKET TYPE';
+
+//         Keywords::typeIntel()->get();
+
+
+
+//         // find socket value
+//         // get socket list from sockets
+//         $intel_sql = "SELECT id, skey, display_name FROM keyword_list WHERE `type`=5 AND status = 1 order by seqno";
+//         $select = $db->prepare($intel_sql);
+//         if ($select->execute()) {
+//             foreach ($select->fetchAll(PDO::FETCH_ASSOC) as $k) {
+//                 $aryKey = json_decode($k['display_name'], true);
+//                 $k['display_name'] = $aryKey['en'];
+//                 $newSocketlist['intel'][] = $k;
+//                 $tagKey[$k['skey']] = $k['display_name'];
+//             };
+//         }
+//         $amd_sql = "SELECT id, skey, display_name FROM keyword_list WHERE `type`=4 AND status = 1 order by seqno";
+//         $select = $db->prepare($amd_sql);
+//         if ($select->execute()) {
+//             foreach ($select->fetchAll(PDO::FETCH_ASSOC) as $k) {
+//                 $aryKey = json_decode($k['display_name'], true);
+//                 $k['display_name'] = $aryKey['en'];
+//                 $newSocketlist['amd'][] = $k;
+//                 $tagKey[$k['skey']] = $k['display_name'];
+//             };
+//         }
+
+
+//         $aryAllowIn['socket'] = $socketAllowIn;
+//         fprintf($handle, "%s", "filter_id=4");
+//         fprintf($handle, "%s", "\nfilter_flag=socket");
+//         fprintf($handle, "%s", "\nfilter_data=" . json_encode($newSocketlist));
+//         fprintf($handle, "%s", "\nfilter_in=" . json_encode($socketAllowIn));
+
+
+//         // last part
+//         $content[] ="\n\n[SETTINGS]\n";
+//         $content[] =
+//         fprintf($handle, "\n\n");
+//         fprintf($handle, "[SETTINGS]");
+//         $content[] = "\nfilter_allow_in=" . json_encode($aryAllowIn);
+//         $content[] = "\nfilter_arykey=" . json_encode($aryFkey);
+//         $content[] = "\nfilter_cat_name=" . json_encode($aryFilterCatName);
+//         $content[] = "\nfilter_tags_key=" . json_encode($tagKey);
+//         // end
+
+//         // $content = [];
+//         // $content[] = "[json]\njson_menu=" . json_encode($this->activeAryNavmenu2022List($locale));
+//         // $content[] = "\nfilter_menucat=" . json_encode($this->activeAryNavmenu2022ListOneLevel($locale));
+
+//         // if ($fileService->createConf('filter', 'LHS_filter.conf', $locale,  implode("\n\n", $content))) {
+//         //     return response()->json(['result' => true]);
+//         // } else {
+//         //     return response()->json(['result' => false]);
+//         // }
+
+// */
+//     }
+
+/**
+ * get selected filter
+ */
+
+    public function getAllowMenucat($aryKtype)
+    {
+        if (!empty($aryKtype)) {
+            $data = Navmenu2022Filter::whereIn('ktype', $aryKtype)->get()->toArray();
+
+            return $data;
+        } else {
+            return false;
+        }
+
+        // find 2022_navmenu_filter
+        $sql = " SELECT menucat FROM `2022_navmenu_filter` WHERE ktype in (?) group by menucat";
+
+        $select = $db->prepare($sql);
+        $select->execute([$ktype]);
+        return $select->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     public function getSocketList($locale)
@@ -114,15 +211,13 @@ class KeywordsController extends Controller
 
             $updateSocket = $this->handleKeyword2prod($request->get('partno'), $selectedSockets, [Keywords::TYPE_AMD, Keywords::TYPE_INTEL]);
 
-            if (!empty($updateSocket)){
+            if (!empty($updateSocket)) {
                 // get socket list
-                
-                return response()->json($this->getSocketTypeByPartno($locale,$request));
-            } else {
-                return response()->json(['data'=>"has no change"]);
-            }
 
-            
+                return response()->json($this->getSocketTypeByPartno($locale, $request));
+            } else {
+                return response()->json(['data' => "has no change"]);
+            }
         } catch (ValidationException $ex) {
             return $ex->validator->errors();
         }
@@ -194,7 +289,7 @@ class KeywordsController extends Controller
                         $newProdKey = ProdKeywords::firstOrNew(
                             ['skey' => $ids, 'partno' => $partno]
                         );
-                        if ($newProdKey->save()){
+                        if ($newProdKey->save()) {
                             $doneId[] = $newProdKey->id;
                         };
                         Logger()->debug(" handleKeyword2prod - insert data : " . var_export($ids, true));
@@ -203,9 +298,9 @@ class KeywordsController extends Controller
                 }
                 // // do delete
                 foreach ($aryDelete as $k => $ids) {
-                    $delProdKey = ProdKeywords::where('skey',$ids)->where('partno',$partno)->first();
-                    if ($delProdKey){
-                        if ($delProdKey->delete()){
+                    $delProdKey = ProdKeywords::where('skey', $ids)->where('partno', $partno)->first();
+                    if ($delProdKey) {
+                        if ($delProdKey->delete()) {
                             $doneId[] = $delProdKey->id;
                         };
                         Logger()->debug(" handleKeyword2prod - delProdKey : " . var_export($delProdKey, true));
@@ -216,7 +311,6 @@ class KeywordsController extends Controller
                 Logger()->debug(" handleKeyword2prod - no partno : ");
                 return false;
             }
-            
         } catch (ValidationException $ex) {
             return $ex->validator->errors();
         }
@@ -237,21 +331,6 @@ class KeywordsController extends Controller
         $offset = ($page - 1) * $rows;
         $keywords = Keywords::orderBy('seqno', 'asc')->get();
         return response()->json(['rows' => $keywords, 'total' => Keywords::all()->count()]);
-    }
-
-        /**
-     * list out all keyword type
-     * return json array
-     */
-    public function list_all_types(Request $request)
-    {
-        $sort = $request->get('sort') ? $request->get('sort') : 'id';
-        $order = $request->get('order') ? strval($request->get('order')) : 'asc';
-        $page = $request->get('page') ? intval($request->get('page')) : 1;
-        $rows = $request->get('rows') ? intval($request->get('rows')) : 25;
-        $offset = ($page - 1) * $rows;
-        $keywords = KeywordTypes::orderBy('id', 'asc')->get();
-        return response()->json(['rows' => $keywords, 'total' => KeywordTypes::all()->count()]);
     }
 
     /**

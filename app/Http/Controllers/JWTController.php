@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 use App\Models\User;
 
@@ -60,7 +58,6 @@ class JWTController extends Controller
      */
     public function login(Request $request)
     {
-        logger()->debug(" JWTController login " .var_export($request->all(), true));
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
@@ -72,27 +69,6 @@ class JWTController extends Controller
 
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
-        } 
-        $credentials = $request->only('email', 'password');
-
-        try {
-            
-            $user = User::where('email', '=', $request->email)->first();
-            $token = JWTAuth::attempt($credentials);
-            logger()->debug(" JWTController login " .var_export($token, true));
-          //  $token = JWTAuth::encode($user->id, config('jwt.key'));
-            // if (! $token = JWTAuth::attempt($credentials)) {
-            //     return response()->json([
-            //     	'success' => false,
-            //     	'message' => 'Login credentials are invalid.',
-            //     ], 400);
-            // }
-        } catch (JWTException $e) {
-    	return $credentials;
-            return response()->json([
-                	'success' => false,
-                	'message' => 'Could not create token.',
-                ], 500);
         }
 
         return $this->respondWithToken($token);
@@ -140,15 +116,9 @@ class JWTController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'status' => 'success',
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 600,
-            'user' => auth()->user(),
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
+            'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
 }

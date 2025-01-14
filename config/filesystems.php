@@ -34,9 +34,9 @@ return [
             'driver' => 'local',
             'root' => storage_path('app'),
         ],
-        'web2206'=> [
+        'web2206' => [
             'driver' => 'local',
-            'root' => env("AKASAWEBDIR_2206", "/akasa/www/akasa2206"),
+            'root' => "/akasa/www/akasa2206",
             'permissions' => [
                 'file' => [
                     'public' => 0775,
@@ -48,9 +48,9 @@ return [
                 ],
             ],
         ],
-        'marketing'=> [
+        'marketing' => [
             'driver' => 'local',
-            'root' => env("MARKETING_DIR", "/akasa/www/marketing"),
+            'root' => "/akasa/www/marketing",
             'permissions' => [
                 'file' => [
                     'public' => 0775,
@@ -62,9 +62,9 @@ return [
                 ],
             ],
         ],
-        'marketing_reviewsite'=> [
+        'marketing_reviewsite' => [
             'driver' => 'local',
-            'root' => env("MARKETING_DIR", "/akasa/www/marketing")."/img/product/common/review",
+            'root' => env("MARKETING_DIR", "/akasa/www/marketing") . "/img/product/common/review",
             'permissions' => [
                 'file' => [
                     'public' => 0775,
@@ -76,9 +76,9 @@ return [
                 ],
             ],
         ],
-        'product_docs'=> [
+        'www_docs' => [
             'driver' => 'local',
-            'root' => env("DOCDIR", "/akasa/www/docs")."/products",
+            'root' => env("DOCDIR", "/akasa/www/docs"),
             'permissions' => [
                 'file' => [
                     'public' => 0775,
@@ -90,23 +90,53 @@ return [
                 ],
             ],
         ],
-        
-
+        'product_docs' => [
+            'driver' => 'local',
+            'root' => env("PRODUCTDOCS", "/akasa/www/docs") . "/products",
+            'permissions' => [
+                'file' => [
+                    'public' => 0775,
+                    'private' => 0770,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0770,
+                ],
+            ],
+        ],
+        'akasaone' => [
+            'driver' => 'local',
+            'root' => env("AKASAONE", "/akasa/www/docs") . "/akasaone",
+            'permissions' => [
+                'file' => [
+                    'public' => 0775,
+                    'private' => 0770,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0770,
+                ],
+            ],
+        ],
+        'akasaweb_oem' => [
+            'driver' => 'local',
+            'root' => env("OEMWEBDIR", "/akasa/www/akasa2206/business"),
+            'permissions' => [
+                'file' => [
+                    'public' => 0775,
+                    'private' => 0770,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0770,
+                ],
+            ],
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
-            'permissions' => [
-                'file' => [
-                    'public' => 0774,
-                    'private' => 0600,
-                ],
-                'dir' => [
-                    'public' => 0774,
-                    'private' => 0700,
-                ],
-            ],
         ],
 
         's3' => [
@@ -119,25 +149,16 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
         ],
-        'sftp_uk' => [
-            'driver' => 'sftp',
-            'host' => env('SFTP_HOST_UK'),
-            'username' => env('SFTP_HOST_USER'),
-            'password' => env('SFTP_HOST_PASSWORD'),
-            'port' => 22,
-            'timeout' => 60,
-      ],
-      'ftp_uk' => [
-        'driver' => 'ftp',
-        'host' => env('FTP_HOST_UK'),
-        'username' => env('FTP_HOST_USER'),
-        'password' => env('FTP_HOST_PASSWORD'),
-        'port' => 21,
-        'timeout' => 30,
-        'ssl'      => env('FTP_SSL', false),
-        'passive'  => true,
-  ],
-      
+        'ftp_uk' => [
+            'driver' => 'ftp',
+            'host' => env('FTP_HOST_UK'),
+            'username' => env('FTP_HOST_USER'),
+            'password' => env('FTP_HOST_PASSWORD'),
+            'port' => 21,
+            'timeout' => 30,
+            'ssl'      => env('FTP_SSL', false),
+            'passive'  => true,
+        ],
 
     ],
 

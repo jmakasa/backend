@@ -19,18 +19,17 @@ class JwtMiddleware extends BaseMiddleware
      */
     public function handle($request, Closure $next)
     {
-        logger()->debug(" JwtMiddleware " .var_export($request->all(), true));
+        logger()->debug(" JwtMiddleware " .var_export($request, true));
         try {
             $user = \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
             logger()->debug(" JwtMiddleware : user " .var_export($user, true));
         } catch (Exception $e) {
-            logger()->error(" JwtMiddleware error " .var_export($e, true));
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
                 return response()->json(['status' => 'Token is Invalid']);
             }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
                 return response()->json(['status' => 'Token is Expired']);
             }else{
-             //   return response()->json(['status' => 'Authorization Token not found']);
+                return response()->json(['status' => 'Authorization Token not found']);
             }
         }
         return $next($request);

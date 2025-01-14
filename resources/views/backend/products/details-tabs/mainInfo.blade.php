@@ -52,7 +52,7 @@
           <label for="mf_longDesc" class="col-sm-2 col-form-label col-form-label-sm text-end">Keywords</label>
           <div class="col-sm-10">
             <textarea class="form-control form-control-sm border-orange" id="mf_keywords" rows="3" ng-model="productDetails.keywords" readonly></textarea>
-            <p>* The keyword should be manage on keyword page. You can add keywords (seperate with comma ,) if there is out of the keyword list. </p>
+            <p>* The keyword should be manage on keyword page. You can add EXTRA keywords (seperate with comma ,) if there is out of the keyword list. </p>
           </div>
         </div>
         @if ($product->iscooler)

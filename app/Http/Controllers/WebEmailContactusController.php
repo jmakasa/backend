@@ -12,7 +12,6 @@ use Illuminate\Validation\ValidationException;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Illuminate\Support\Facades\Mail;
-use Redirect;
 
 class WebEmailContactusController extends Controller
 {
@@ -26,7 +25,6 @@ class WebEmailContactusController extends Controller
     protected $filesizeLimit;
     protected $SMTPDebug;
     protected $SMTPSecure;
-    protected $contactReason;
 
     public function __construct()
     {
@@ -43,136 +41,63 @@ class WebEmailContactusController extends Controller
         $this->filesizeLimit = "3072"; //3MB
         $this->SMTPDebug = 2; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
         $this->SMTPSecure = false;
-
-
-
-        $this->contactReason = [
-            'RMA Related' => 'RR',
-            'Technical Support' => 'TS',
-            'Press Inquiries' => 'PI',
-            'Reseller and Distribution' => 'RD',
-            'Others' => 'OT',
-        ];
     }
 
-    public function viewlist($locale, Request $request)
+    public function getList()
     {
-        if (!$this->hasLoginFromMarketing()) {
-            // redirect to login
-            $currenturl = $request->url();
-
-            //   dd($currenturl);
-            $host = request()->getHttpHost();
-            $url = "http://" . $host . "/marketing/login.php?returnUrl=" . $currenturl;
-            return Redirect::to($url);
-        }
-
-        Logger()->debug(" getList : session " . var_export($_SESSION, true));
-        return view('backend.emails.list');
-    }
-
-    public function getList($locale, Request $request)
-    {
-        //   Logger()->debug(" getList : " . var_export($request->all(), true));
-        $sort = $request->has('sort') ? $request->get('sort') : 'econtactus.created_at';
-        $order = $request->has('order') ? $request->get('order') : 'desc';
-        $page = $request->has('page') ? $request->get('page') : 1;
-        $rows = $request->has('rows') ? $request->get('rows') : 50;
-        $lang = $request->has('lang') ? $request->get('lang') : 'en';
-        $skip = ($page - 1) * $rows;
-       // $emailContactus = WebEmailContactus::leftJoin('mysql.tasks','email_contactus.id','=','tasks.email_id')->orderBy($sort, $order)->skip($skip)->take($rows);
-       $emailContactus = DB::table('akasacou_2206_web.email_contactus as econtactus')
-       ->leftJoin('akasaweb2021.tasks as s2tasks','econtactus.id','=','s2tasks.email_id')
-       ->select("econtactus.*",'s2tasks.type as ttype','s2tasks.status as tstatus','s2tasks.assignee as assignee')
-       ->orderBy($sort, $order)->skip($skip)->take($rows);
-        $result['total'] = WebEmailContactus::all()->count();
-        $result['rows'] = $emailContactus->get();
-
-        //   Logger()->debug(" getList : emailContactus " . var_export($result, true));
-        return response()->json($result);
-    }
-
-    public function getDetailById($locale, Request $request)
-    {
-        try {
-
-            $this->validate(
-                $request,
-                [
-                    'id' => 'required',
-                ],
-                [
-                    'id.required' => 'email ID is required.',
-                ]
-            );
-            $result = [];
-            $getEmail = WebEmailContactus::where('id', $request->get('id'))->first();
-
-            if ($getEmail) {
-                foreach ($this->contactReason as $rkey => $reason) {
-                    $getEmail->subject = str_replace("[" . $rkey . "]", "[" . $reason . "]", $getEmail->subject);
-                    $getEmail->contact_reason = str_replace($rkey, $reason, $getEmail->contact_reason);
-                }
-                $aryContent = explode("Description :", $getEmail->description);
-
-                $getEmail->description = $aryContent[1];
-                $result['email'] = $getEmail;
-                $result['result'] = true;
-            }
-
-            return response()->json($result);
-        } catch (Exception $e) {
-            Logger()->debug(" compose : error - " . var_export($e, true));
-            //    dd($mail->ErrorInfo);
-            //      exit;
-            //  return back()->with('error','Message could not be sent.');
-        }
+        $emailContactus = WebEmailContactus::all()->toArray();
+        return response()->json($emailContactus);
     }
 
     public function mailTest($locale, Request $request)
     {
 
-
-        try {
+        
+        try{
             Logger()->debug(" mailTest ");
 
             $data = array('name' => "Virat Gandhi");
             Mail::send('email.temp', $data, function ($message) {
                 $message->to('makjustin@protonmail.com', 'Tutorials Point')
-                    ->subject('Laravel HTML Testing Mail');
+                ->subject('Laravel HTML Testing Mail');
                 $message->attach(public_path('uploads/AK-PCCE25-01_g05.jpg'));
-                // Logger()->debug(" mailTest : ".var_export($message,true));
+               // Logger()->debug(" mailTest : ".var_export($message,true));
             });
             Logger()->debug(" mailTest : sent?");
-        } catch (Exception $e) {
+        }  catch (Exception $e) {
             Logger()->debug(" compose : error - " . var_export($e, true));
-            //    dd($mail->ErrorInfo);
-            //      exit;
+        //    dd($mail->ErrorInfo);
+      //      exit;
             //  return back()->with('error','Message could not be sent.');
         }
+       
     }
 
     public function composeEmail($locale, Request $request)
     {
-        try {
-            Logger()->debug(" mailTest ");
+        try{
+            Logger()->debug(" composeEmail sendmail ");
+
+            // TODO ::  sender, sender name, cc, bcc, replyTo, from, to 
+            //  email : subject, content, attachment
+            // returnPath
 
             $data = array('name' => "Virat Gandhi");
             Mail::send('email.temp', $data, function ($message) {
                 $message->to('makjustin@protonmail.com', 'Tutorials Point')
-                    ->subject('Laravel HTML Testing Mail');
+                ->subject('Laravel HTML Testing Mail');
                 $message->attach(public_path('uploads/AK-PCCE25-01_g05.jpg'));
-                // Logger()->debug(" mailTest : ".var_export($message,true));
+               // Logger()->debug(" mailTest : ".var_export($message,true));
             });
             Logger()->debug(" mailTest : sent?");
-        } catch (Exception $e) {
+        }  catch (Exception $e) {
             Logger()->debug(" compose : error - " . var_export($e, true));
-            //    dd($mail->ErrorInfo);
-            //      exit;
+        //    dd($mail->ErrorInfo);
+      //      exit;
             //  return back()->with('error','Message could not be sent.');
         }
     }
-
+    
     public function composePhpmailerEmail($locale, Request $request)
     {
         try {

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\Validatable;
 use App\Traits\CreatedUpdatedBy;
 
-class Blogs extends Model
+class TopSalesQty extends Model
 {
     use HasFactory;
   //  use UuidForKey;
@@ -18,26 +18,11 @@ class Blogs extends Model
     const STATUS_ACTIVE = "Active";
     const STATUS_INACTIVE = "Inactive";
 
-    const PSTATUS_EOL = 6;
-
-    const TYPE_MAIN = "Main";
+    protected $table = 'top_sales_qty';
 
 
     protected $fillable = [
-        'title',
-        'subtitle',
-        'contents',
-        'btype',
-        'releasedate',
-        'topimage',
-        'caption',
-        'seqno',
-        'lang',
-        'featured_blog',
-        'status',
-        'related_products',
-        'created_by',
-        'updated_by',
+        'company_name', 'account_ref', 'productcode', 'year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sept', 'oct', 'nov', 'dec', 'tot', 'status', 'created_by', 'updated_by'
     ];
 
     protected $casts = [
@@ -50,10 +35,7 @@ class Blogs extends Model
     public function getValidationRules()
     {
         return [
-            'title' => 'required',
-            'contents' => 'required',
-            'lang' => 'required',
-            'btype' => 'required',
+            'company_name' => 'required',
         ];
     }
 

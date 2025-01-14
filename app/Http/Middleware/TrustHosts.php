@@ -15,6 +15,7 @@ class TrustHosts extends Middleware
     {
         return [
             $this->allSubdomainsOfApplicationUrl(),
+            'http://local.akasa_crm.uk'
         ];
     }
 }

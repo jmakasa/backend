@@ -43,7 +43,7 @@ class Controller extends BaseController
      
          }
 
-    /**
+         /**
           * for simple checking login
           */
           public function hasLoginFromMarketing(){
@@ -53,7 +53,6 @@ class Controller extends BaseController
                 return false;
             }
           }
-
           public function loginUser(){
             return [
                 'username'=> (isset($_SESSION["username"]) ? $_SESSION["username"]: 'SYS'),
@@ -62,7 +61,7 @@ class Controller extends BaseController
             ];
           }
 
-    /**
+              /**
      * essential validation
      */
     public function validateId()
@@ -76,7 +75,6 @@ class Controller extends BaseController
             ],
         ];
     }
-
     public function cleanStr($string){
         // Replaces all spaces with hyphens.
         $string = str_replace(' ', '-', $string);

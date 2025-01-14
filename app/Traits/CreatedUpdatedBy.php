@@ -13,9 +13,6 @@ trait CreatedUpdatedBy
             if (auth()->user()) {
                 $name = auth()->user()->name;
             }
-            if (isset($_SESSION['username']) && $_SESSION['username']){
-                $name =$_SESSION['username'];
-            };
             if (!$model->isDirty('created_by')) {
                 $model->created_by = $name;
             }
@@ -27,9 +24,6 @@ trait CreatedUpdatedBy
         // updating updated_by when model is updated
         static::updating(function ($model) {
             $name = "SYSTEM";
-            if (isset($_SESSION['username']) && $_SESSION['username']){
-                $name =$_SESSION['username'];
-            };
             if (auth()->user()) {
                 $name = auth()->user()->name;
             }

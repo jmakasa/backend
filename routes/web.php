@@ -35,18 +35,8 @@ Route::prefix('{locale}')
         function ($locale) {
 
             Route::get('/home', 'HomeController@index')->name('home');
-           // Route::get('/', 'HomeController@landing')->name('home.landing');
-           Route::get('/', 'AdminController@dashboard')->name('admin.dashboard'); 
-           Route::get('/aboutus', 'HomeController@aboutus')->name('home.aboutus');
-            Route::get('/product/view/detail/{partno}', 'ProductsController@view_detail')->name('products.view_detail');
-            Route::get('/emails/view/list', 'WebEmailContactusController@viewlist')->name('emails.viewlist');
-            Route::get('/customer_services/view/list', 'CustomerServicesController@viewlist')->name('cs.viewlist');
-            Route::get('/tasks/detail/{id}', 'TasksController@viewDetailById')->name('cs.taskDetail');
-            Route::get('/tickets/detail/{id}', 'TicketsController@viewDetailById')->name('cs.viewTicketDetail');
-            Route::get('/tasks/fetch', 'TaskThreadsController@imapFetch')->name('cs.fetchImapEmailTasks');
-            Route::get('/tickets/fetch', 'TicketThreadsController@imapFetch')->name('cs.fetchImapEmailTickets');
-            Route::get('/tasks/test/notice/{id}', 'TasksController@testNotice')->name('cs.testNotice');
-            
+            Route::get('/', 'HomeController@landing')->name('home.landing');
+            Route::get('/aboutus', 'HomeController@aboutus')->name('home.aboutus');
         }
     );
 
@@ -59,7 +49,7 @@ Route::prefix('{locale}/admin')
         });
 
 Route::prefix('{locale}/admin')
-    ->middleware(['set_locale','api'])
+    ->middleware(['set_locale'])
     ->group(
         function ($locale) {
             // home
@@ -94,14 +84,9 @@ Route::prefix('{locale}/admin')
             Route::get('/products/edit/{products_id}', 'ProductsController@edit')->name('admin.products_edit');
             Route::post('/products/store', 'ProductsController@store')->name('admin.products_store');
             Route::post('/products/update', 'ProductsController@update')->name('admin.products_update');
-
-            // employees
-            Route::get('/employees/list', 'EmployeesController@viewList')->name('admin.employees.viewList');
-            
-            
         }
     );
 
 Route::get('/', function () {
-    return redirect()->to('/login' . config("app.locale"));
+    return redirect()->to('/' . config("app.locale"));
 });

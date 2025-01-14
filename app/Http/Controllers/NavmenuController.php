@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Navmenu2022;
+use App\Models\CRM_818\Navmenu2022818;
+use App\Models\Navmenu2022Filter;
 use App\Models\ProdlistBoxes;
 
-use App\Models\Blogs;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\FileService;
-use Faker\Guesser\Name;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Validation\ValidationException;
@@ -23,10 +24,64 @@ class NavmenuController extends Controller
     protected $imgWebPath;
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['exportNavmenu', 'jsonNavmenu2022List', 'update', 'backendNavmenu','getNavmenuListByPartno']]);
+        $this->middleware('auth', ['except' => ['exportNavmenu', 'jsonNavmenu2022List', 'update', 'backendNavmenu','getNavmenuListByPartno',"getSeletedFilterList","updateSelectedFilterSeqno"]]);
         $this->imgWebPath = "/img/product/banner/";
         $this->imgPath = env("AKASAWEBDIR_2206", "/akasa/www/akasa2206") . $this->imgWebPath;
     }
+
+/**
+ * 
+ * get selected filter list
+ */
+
+ public function getSeletedFilterList($locale, Request $request){
+    try {
+        $this->validate(
+            $request,
+            [
+                'menucat' => 'required',
+            ],
+            [
+                'menucat.required' => 'submenu is required.',
+            ]
+        );
+
+        $navFiler= Navmenu2022Filter::where('menucat',$request->get("menucat"))->orderBy("seqno","asc")->get()->toArray();
+
+        return response()->json(['result' => true,"rows"=> $navFiler]); 
+
+    } catch (ValidationException $ex) {
+        return $ex->validator->errors();
+    }
+ }
+
+ public function updateSelectedFilterSeqno($locale, Request $request){
+    try {
+        $this->validate(
+            $request,
+            [
+                'id' => 'required',
+                'seqno' => 'required',  
+            ],
+            [
+                'id.required' => 'ID is required.',
+                'seqno.required' => 'SEQNO is required.',
+            ]
+        );
+
+        $update = Navmenu2022Filter::whereId($request->get('id'))
+                    ->update(['seqno'=> $request->get('seqno')]);
+
+        
+
+        return response()->json(['result' => $update]); 
+
+    } catch (ValidationException $ex) {
+        return $ex->validator->errors();
+    }
+ }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -161,6 +216,24 @@ class NavmenuController extends Controller
                 $Navmenu2022->display_name = $aryDisplayname['en'];
                 $Navmenu2022->json = $request->input('json');
                 //$Navmenu2022->json = json_encode($aryDisplayname);
+                // 818
+                $Navmenu2022818 = Navmenu2022818::whereId($request->input("id"))->first();
+                
+                $Navmenu2022818->submenu = $request->input("submenu");
+                $Navmenu2022818->parent_id = $request->input('parent_id');
+                // find parent - submenu
+                $Navmenu2022818->parent = $this->getParentById($request->input('parent_id'));
+                $Navmenu2022818->title = $request->input("title");
+                $Navmenu2022818->desc = $request->input("desc");
+                $Navmenu2022818->seqno = $request->input('seqno');
+                $Navmenu2022818->has_child = ($request->input('has_child')?1:0);
+                $Navmenu2022818->status = $request->input('status');
+                $Navmenu2022818->is_display_image = ($request->input('is_display_image')?1:0);
+                $Navmenu2022818->css_style = $request->input('css_style');
+
+                $Navmenu2022818->display_name = $aryDisplayname['en'];
+                $Navmenu2022818->json = $request->input('json');
+
                 
             } else {
                 logger()->debug(" Navmenu2022 - create : " . var_export($request->all(), true));
@@ -182,6 +255,9 @@ class NavmenuController extends Controller
                 $Navmenu2022 = (new Navmenu2022)
                     ->validateAndFill($request->all())
                     ->setAttribute('status', Navmenu2022::STATUS_ACTIVE);
+                $Navmenu2022818 = (new Navmenu2022818)
+                    ->validateAndFill($request->all())
+                    ->setAttribute('status', Navmenu2022::STATUS_ACTIVE);
             }
 
             // set default value 
@@ -189,9 +265,10 @@ class NavmenuController extends Controller
                 $fileName = $request->imagefile->getClientOriginalName();
                 $request->imagefile->move($this->imgPath, $fileName);
                 $Navmenu2022->docname  = $this->imgWebPath . $fileName;
+                $Navmenu2022818->docname  = $this->imgWebPath . $fileName;
             }
             //   logger()->debug(" Navmenu2022 - update data : " . var_export($Navmenu2022,true));
-            if ($result = $Navmenu2022->save()) {
+            if ($result = $Navmenu2022->save() && $Navmenu2022818->save()) {
                 logger()->debug(" Navmenu2022 - update data : SAVED" . var_export($result, true));
                 return response()->json(['result' => $result]);
                 //     return redirect()->route('admin.Navmenu2022_list', [config('app.locale')])->with('status', 'Navmenu2022 is Updated');
@@ -374,7 +451,6 @@ class NavmenuController extends Controller
 
     public function activeAryNavmenu2022ListOneLevel($locale = 'en')
     {
-        //  fprintf($handle, "[MENUCAT]\n");
         $aryMenucatField = ['id', 'd_group_cat', 'group_cat', 'main_cat', 'sub_cat', 'docname', 'title', 'desc','submenu_json','parent_json'];
 
         $aryData = DB::table('2022_navmenu AS a')
@@ -389,17 +465,21 @@ class NavmenuController extends Controller
             $row = (array)$obj;
             //  dd($row);
             foreach ($aryMenucatField as $field) {
-                
-                if ($field == 'submenu_json') {
-                    foreach (json_decode($row[$field]) as $key => $txt) {
-                        $aryMenucat[$row['id']]['sub_title_' . $key] = $txt;
-                    }
-                } else if ($field == 'parent_json') {
-                    foreach (json_decode($row[$field]) as $key => $txt) {
-                        $aryMenucat[$row['id']]['main_title_' . $key] = $txt;
-                    }
-                } else {
-                    $aryMenucat[$row['id']][$field] = $row[$field];
+                switch ($field){
+                    case 'submenu_json':
+                        foreach (json_decode($row[$field]) as $key => $txt) {
+                            $aryMenucat[$row['id']]['sub_title_' . $key] = $txt;
+                        }
+                        UNSET($row[$field]);
+                    break;
+                    case 'parent_json':
+                        foreach (json_decode($row[$field]) as $key => $txt) {
+                            $aryMenucat[$row['id']]['main_title_' . $key] = $txt;
+                        }
+                    break;
+                    default:
+                        $aryMenucat[$row['id']][$field] = $row[$field];
+                    break;
                 }
             }
         }
@@ -414,6 +494,7 @@ class NavmenuController extends Controller
         $homeMenus = Navmenu2022::select('id', 'parent_id', 'parent', 'submenu', 'title', 'desc', 'docname', 'display_name')->whereParentId("0")->get();
         $aryMenus = [];
         foreach ($homeMenus as $menu) {
+            $aryMenus[$menu['id']]['id'] = $menu['id'];
             $aryMenus[$menu['id']]['parent_id'] = $menu['parent_id'];
             $aryMenus[$menu['id']]['parent'] = $menu['parent'];
             $aryMenus[$menu['id']]['submenu'] = $menu['submenu'];
@@ -423,6 +504,7 @@ class NavmenuController extends Controller
             $aryMenus[$menu['id']]['display_name'] = $menu['display_name'];
             foreach ($menu->recurringchildren->toArray() as $submenu) {
                 // logger()->debug(" --- aryNavmenu2022List ----" . var_export($submenu, true));
+                $aryMenus[$menu['id']]['children'][$submenu['id']]['id'] = $submenu['id'];
                 $aryMenus[$menu['id']]['children'][$submenu['id']]['parent_id'] = $submenu['parent_id'];
                 $aryMenus[$menu['id']]['children'][$submenu['id']]['parent'] = $submenu['parent'];
                 $aryMenus[$menu['id']]['children'][$submenu['id']]['submenu'] = $submenu['submenu'];
@@ -431,6 +513,7 @@ class NavmenuController extends Controller
                 $aryMenus[$menu['id']]['children'][$submenu['id']]['docname'] = $submenu['docname'];
                 $aryMenus[$menu['id']]['children'][$submenu['id']]['display_name'] = $submenu['display_name'];
                 foreach ($submenu['children'] as $lastMenu) {
+                    $aryMenus[$menu['id']]['children'][$submenu['id']]['children'][$lastMenu['id']]['id'] = $lastMenu['id'];
                     $aryMenus[$menu['id']]['children'][$submenu['id']]['children'][$lastMenu['id']]['parent_id'] = $lastMenu['parent_id'];
                     $aryMenus[$menu['id']]['children'][$submenu['id']]['children'][$lastMenu['id']]['parent'] = $lastMenu['parent'];
                     $aryMenus[$menu['id']]['children'][$submenu['id']]['children'][$lastMenu['id']]['submenu'] = $lastMenu['submenu'];
@@ -457,6 +540,7 @@ class NavmenuController extends Controller
         $navmenus = "<div class=\"easyui-panel\" style=\"width:980px;padding:5px;\" data-options=\"border:false\">\n";
         $cntMainNav = 0;
         $cnt2ndNav = 0;
+
         foreach ($aryNavmenus as $navmenu) {
             $cntMainNav++;
             $navmenus .= "<a href=\"javascript:showlist('" . $navmenu['id'] . "','" . $navmenu['submenu'] . "')\" class=\"easyui-menubutton\" data-options=\""

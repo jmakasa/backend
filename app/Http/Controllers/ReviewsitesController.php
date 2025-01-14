@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reviewsites;
 use App\Models\ReviewsitesHistory;
 use App\Services\FileService;
+use App\Services\HistoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -167,6 +168,13 @@ class ReviewsitesController extends Controller
             }
 
             $reviewsite->comment = $request->get('comment');
+
+            if ($reviewsite->isDirty()) {
+                $historyService = new HistoryService;
+                foreach ($reviewsite->getDirty() as $key => $value) {
+                    $historyService->addProductsChangeLogs($reviewsite->id, $reviewsite->partno, $reviewsite->getTable(), $key, $reviewsite->getOriginal($key), $value, 'change', $request->get('username'));
+                }
+            }
             Logger()->debug(" ReviewsitesController - editReviewsites " . var_export($request->all(), true));
             if ($reviewsite->save()) {
                 return response()->json($reviewsite->toArray());
@@ -213,6 +221,9 @@ class ReviewsitesController extends Controller
         $aryReviewsite = [];
         foreach ($reviewsites as $data) {
             $aryReviewsite[$data['id']] = $data;
+
+            // move images
+            $fileService->exportFiles(FileService::FILE_TYPE_REVIEWSITE, $data['sitelogo'], 'reviewsitelogo', $locale);
         }
         $result = $fileService->createConf(FileService::TYPE_REVIEWSITE, 'reviewsites.conf', $locale,  "[reviewsites]\nsites=" . json_encode($aryReviewsite));
         if ($result){
@@ -229,7 +240,7 @@ class ReviewsitesController extends Controller
         $aryFileinfo = pathinfo($logoname);
 
         //$newFilename = str_replace(" ", "_", Str::lower($sitename)) . "_" . str_replace(" ", "_", Str::lower($logoname));
-        $newFilename = str_replace(" ", "_", Str::lower($sitename)) ."_".date('ymdHis').".".$aryFileinfo['extension'];
+        $newFilename = str_replace(" ", "_", Str::upper($sitename)) ."_".date('ymdHis').".".$aryFileinfo['extension'];
         // Logger()->debug(" ReviewsitesController - sitelogo " . var_export($request->get('sitelogo'), true));
         // Logger()->debug(" ReviewsitesController - adnewFilename " . var_export($newFilename, true));
         $renameFile = $fileService->renameFile(FileService::FILE_TYPE_REVIEWSITE, $logoname, $newFilename, 'icon/');

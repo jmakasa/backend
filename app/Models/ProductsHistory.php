@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\Validatable;
 use App\Traits\CreatedUpdatedBy;
 
-class Products extends Model
+class ProductsHistory extends Model
 {
     use HasFactory;
   //  use UuidForKey;
     use Validatable;
-    use CreatedUpdatedBy;
+    //use CreatedUpdatedBy;
 
+    protected $table = 'products_history';
+
+    public $timestamps = false;
+    
     const STATUS_ACTIVE = "Active";
     const STATUS_INACTIVE = "Inactive";
-
-    const STATUS_ONE = 1;
-    const STATUS_ZERO = 0;
 
     const PSTATUS_UP = 1;
     const PSTATUS_NEW = 2; //  active & newproduct
@@ -31,14 +32,13 @@ class Products extends Model
 
     const TYPE_MAIN = "Main";
 
-    const CREATED_AT = 'createdate';
-    const CREATED_BY = 'creator';
-    const UPDATED_AT = 'moddate';
-    const UPDATED_BY = 'modauthor';
+    const CREATED_AT = 'logged_at';
+    const CREATED_BY = 'logged_by';
 
     //    protected $fillable = ['name','seq','parent_id'];
 
     protected $fillable = [
+        'id',
         'seqno',
         'prod_cat1',
         'prod_cat2',
@@ -111,6 +111,8 @@ class Products extends Model
         'pstatus',
         'exported',
         'related_box_status',
+        'logged_at',
+        'logged_by',
     ];
 
     protected $casts = [

@@ -1,10 +1,7 @@
-@extends('auth.layout')
-@push('extra-js')
-    <script src="{{ asset('public/libs/angularJs-1.8.2/src/ctrl/LoginCtrl.js') }}"></script>
-@endpush
+@extends('layouts.app')
 
 @section('content')
-<div class="container" ng-controller="LoginCtrl">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -15,11 +12,11 @@
                         @csrf
 
                         <div class="row mb-3">
-                            {{-- <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label> --}}
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+
                             <div class="col-md-6">
-                                <input id="email" type="email" ng-model="loginData.email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                {{-- <input id="username" type="text" class="form-control" name="username" value="{{ old('email') }}" required autofocus> --}}
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -32,7 +29,7 @@
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" ng-model="loginData.password"  class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -56,16 +53,6 @@
 
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <a type="submit" class="btn btn-primary" id="submitlogin" ng-click="submitLogin()">
-                                   NG {{ __('Login') }}
-                                </a>
-                                <a type="submit" class="btn btn-danger" id="submitlogin" ng-click="submitLogout()">
-                                    NG {{ __('Logout') }}
-                                 </a>
-                                 <a type="submit" class="btn btn-danger" id="loginInfo" ng-click="loginInfo()">
-                                    NG {{ __('INFO') }}
-                                 </a>
-                                 
                                 <button type="submit" class="btn btn-primary" id="submitlogin">
                                     {{ __('Login') }}
 </button>

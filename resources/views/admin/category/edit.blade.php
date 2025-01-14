@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+<script src="/node_modules/angular/angular.js"></script>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">

@@ -11,6 +11,8 @@ class UploadFiles extends Model
     use HasFactory;
     use Validatable;
 
+    const ETYPE_PROD = 'product';
+
     protected $fillable = [
         'hostname','local_file','remote_file','filename','etype','lang','method','status','partno','created_by','created_at','updated_by','updated_at'];
 

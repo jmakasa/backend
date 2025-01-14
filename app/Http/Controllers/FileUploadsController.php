@@ -70,31 +70,4 @@ class FileUploadsController extends Controller
         }
     }
 
-    public function testUploadFile($locale,$disk = 'marketing_reviewsite',FileService $fileService){
-        $storageFiles = Storage::disk($disk)->allFiles('icon');
-        echo "<pre>";
-        print_r($storageFiles);
-        echo "</pre>";
-        //         $storageReview = Storage::disk($disk)->getAdapter()->getPathPrefix();
-                
-        // echo "<pre>";
-        // print_r($storageReview);
-        // echo "</pre>";
-        // $oldfile =Storage::disk($disk)->path($storageFiles[0]);
-        // echo "</pre>";
-        // print_r($oldfile);
-
-        // echo "</pre>";
-        // if (!Storage::disk($disk)->exists('icon/Grunex.jpg')) {
-        //     Storage::disk($disk)->copy($storageFiles[0], 'icon/Grunex.jpg');
-        // }
-
-        // Storage::disk($disk)->move('icon/Grunex.jpg', 'icon/'.date('H.i.s').'.jpg');
-
-        // $newFilename
-        $fileService->renameFile(FileService::FILE_TYPE_REVIEWSITE, 'STS.jpg', 'test_to_delete_6_sts.jpg','icon/');
-        
-
-    }
-
 }
