@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 //use App\Traits\UuidForKey;
 use App\Traits\Validatable;
 use App\Traits\CreatedUpdatedBy;
+use App\Traits\LogsChangeAndHistoryTrait;
 
 class Blogs extends Model
 {
@@ -14,6 +15,7 @@ class Blogs extends Model
   //  use UuidForKey;
     use Validatable;
     use CreatedUpdatedBy;
+    use LogsChangeAndHistoryTrait;
 
     const STATUS_ACTIVE = "Active";
     const STATUS_INACTIVE = "Inactive";
@@ -36,8 +38,7 @@ class Blogs extends Model
         'featured_blog',
         'status',
         'related_products',
-        'created_by',
-        'updated_by',
+        'slug',
     ];
 
     protected $casts = [

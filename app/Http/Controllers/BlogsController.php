@@ -370,6 +370,37 @@ class BlogsController extends Controller
         }
     }
 
+    public function export_slug($locale, Request $request, FileService $fileService)
+    {
+        try {
+            $blogs = Blogs::select('id','title')->where("lang", $locale)->where("status", ">", 0)->orderBy("seqno", "asc")->pluck('id')->toArray();
+
+        } catch (ValidationException $ex) {
+            return $ex->validator->errors();
+        }
+    }
+
+    public function convertTitleToURL($str) { 
+	
+        // Convert string to lowercase 
+        $str = strtolower($str); 
+        
+        // Replace the spaces with hyphens 
+        $str = str_replace(' ', '-', $str); 
+        
+        // Remove the special characters 
+        $str = preg_replace('/[^a-z0-9\-]/', '', $str); 
+        
+        // Remove the consecutive hyphens 
+        $str = preg_replace('/-+/', '-', $str); 
+        
+        // Trim hyphens from the beginning 
+        // and ending of String 
+        $str = trim($str, '-'); 
+        
+        return $str; 
+    } 
+
     public function updateDetail($locale, Request $request)
     {
         Logger()->debug(" updateDetail ");
@@ -403,6 +434,9 @@ class BlogsController extends Controller
                 if ($request->has('related_products')){
                     $blogData['related_products']= implode(",",$request->get('related_products'));
                 }
+                // convert title to slug convertTitleToURL
+                $blogData['slug'] = $this->convertTitleToURL($blogData['title']);
+                
                 
                 $newBlog = new Blogs();
                 $newBlog->fill($blogData);
@@ -491,8 +525,6 @@ class BlogsController extends Controller
                     return response()->json($return);
                 }
 
-
-
             } else {
                 // update
                 $this->validate(
@@ -505,12 +537,12 @@ class BlogsController extends Controller
     
                     ]
                 );
+                $blogData = [];
                 $blogId = $request->get('id');
                 $blog = Blogs::whereId($blogId)->whereLang($locale)->get()->first();
     
                 if ($request->has('contents') && $request->get('contents') ){
                     $content = $request->get('contents');
-                    // $content = htmlentities($content);
 
                     $content = str_replace('<figure', '<div class="img_caption"', $content); // Replace <figure> with <div>
                     $content = str_replace('</figure>', '</div>', $content);
@@ -520,10 +552,6 @@ class BlogsController extends Controller
                      $content = mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
      
                      @$dom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-     
-                     // $dom = new \DomDocument();
-         
-                     // @$dom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
          
                      $images = $dom->getElementsByTagName('img');
          
@@ -555,26 +583,24 @@ class BlogsController extends Controller
          
                      // Save the modified HTML content to the database
                      $modifiedContent = $dom->saveHTML();
-                     $blog->contents = $modifiedContent;
+                    // $blog->contents = $modifiedContent;
+                     $blogData['contents'] = $modifiedContent;
                      Logger()->debug(" updateDetail modifiedContent " . var_export($modifiedContent, true));
                 }
                 
-    
-                $blog->title = $request->get('title');
-                $blog->subtitle = $request->get('subtitle');
+                
+                $blogData['title'] = $request->get('title');
+                $blogData['subtitle'] = $request->get('subtitle');
+                
+                $blogData['releasedate'] = $request->get('releasedate');
+                $blogData['btype'] = $request->get('btype');
+                $blogData['slug'] = $this->convertTitleToURL($request->get('title'));
+
                 if ($request->has('related_products')){
-                    $blog->related_products= implode(",",$request->get('related_products'));
+                    $blogData['related_products'] = implode(",",$request->get('related_products'));
                 }
-                //$blog->related_products = $request->get('related_products');
-                // $blog->seqno = $request->get('seqno');
-                $blog->releasedate = $request->get('releasedate');
-                $blog->btype = $request->get('btype');
-                $blog->status = $request->get('status');
-    
                 // handle topimage
-                //$request->file('topimage')
                 if ($request->hasFile('topimage')){
-    
                     $topimg = $request->file('topimage');
                     $folderPath = ($request->has('folderPath') ? $request->get('folderPath') : 'img/blog/'.$locale.'/' . $blogId);
                     $filename = ($request->has('new_filename') ? $request->get('new_filename') : $topimg->getClientOriginalName());
@@ -582,17 +608,14 @@ class BlogsController extends Controller
                     logger()->debug(" updateDetail - topimage :  - $folderPath, $filename,$disktype");
                     $uploaded = $topimg->storeAs($folderPath, $filename, $disktype);
                     logger()->debug(" updateDetail - topimage :  - $folderPath, $filename,$disktype,$uploaded");
-                    $blog->topimage = $filename;
+                    $blogData['topimage'] = $filename;
                 }
     
                 //handle featured blog
-                $blog->featured_blog = is_array($request->get('featured_blog')) ? implode(",", $request->get('featured_blog')) : "";
-                $blog->btype = $request->get('btype');
-                $blog->updated_by = $user;
-    
-            
+                $blogData['featured_blog'] = is_array($request->get('featured_blog')) ? implode(",", $request->get('featured_blog')) : "";
+                
                 $return['result'] = false;
-                if ($blog->save()){
+                if ($blog->saveChangesAndRecordHistory($blogData,'update',$user)){
                     $return['result'] = true;
                     $return['data'] = $blog->toArray();
                     return response()->json($return);
@@ -601,7 +624,6 @@ class BlogsController extends Controller
                 }
 
             }
-          
             
         } catch (ValidationException $ex) {
             return $ex->validator->errors();
