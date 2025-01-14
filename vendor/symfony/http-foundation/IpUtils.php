@@ -73,7 +73,7 @@ class IpUtils
             return false;
         }
 
-        $cacheKey = $requestIp.'-'.$ip.'-v4';
+        $cacheKey = $requestIp.'-'.$ip;
         if (isset(self::$checkedIps[$cacheKey])) {
             return self::$checkedIps[$cacheKey];
         }
@@ -126,7 +126,7 @@ class IpUtils
             return false;
         }
 
-        $cacheKey = $requestIp.'-'.$ip.'-v6';
+        $cacheKey = $requestIp.'-'.$ip;
         if (isset(self::$checkedIps[$cacheKey])) {
             return self::$checkedIps[$cacheKey];
         }
