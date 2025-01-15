@@ -95,6 +95,7 @@ class BlogsController extends Controller
                 'subtitle',
                 "releasedate",
                 "topimage",
+                'slug',
                 DB::raw("CASE
                 WHEN btype =1 THEN 'Company News'
                 WHEN btype =2 THEN 'Industry Insights'
@@ -107,14 +108,24 @@ class BlogsController extends Controller
             // ->orderBy("seqno", "asc")
             ->get();
             $user = ($request->has('username') ? $request->get('username') : 'SYSTEM');
+
+            // export slug
+            $slug = Blogs::select('id','slug')->where("status", ">", 0)->whereLang($locale)->orderBy("status", "desc")
+            ->orderBy('id', 'asc')
+            ->get();
+
             
-            $result = $fileService->createConf(FileService::FILE_TYPE_BLOG,  'list.conf', $locale,  "[BLOGLIST]\njson=" . json_encode($blogs->toArray()),$user, FileService::STATUS_ACTIVE, "Blog");
+            $result = $fileService->createConf(FileService::FILE_TYPE_BLOG,  'list.conf', $locale,  
+                "[BLOGLIST]\njson=" . json_encode($blogs->toArray())."\n\n[SLUGLIST]\nsluglist=" . json_encode($slug->toArray())
+                ,$user, FileService::STATUS_ACTIVE, "Blog");
 
             foreach ($blogs as $b) {
                 if ($b->topimage) {
                     $fileService->exportFiles(FileService::FILE_TYPE_BLOG_IMG, $b->topimage, $b->id, $locale,$user);
                 }
             }
+            
+
             $return['result'] = true;
             return response()->json($return);
         } catch (ValidationException $ex) {
@@ -211,12 +222,12 @@ class BlogsController extends Controller
 
                 if ($index !== false && $index > 0) {
                     $prevId = $blogIds[$index - 1];
-                    $prevBlog = Blogs::select('id', 'title')->whereId($prevId)->first();
+                    $prevBlog = Blogs::select('id', 'title','slug')->whereId($prevId)->first();
                     $blog['prev'] = $prevBlog->toArray();
                 }
                 if ($index !== false && $index < count($blogIds) - 1) {
                     $nextId = $blogIds[$index + 1];
-                    $nextBlog = Blogs::select('id', 'title')->whereId($nextId)->first();
+                    $nextBlog = Blogs::select('id', 'title','slug')->whereId($nextId)->first();
                     $blog['next'] = $nextBlog->toArray();
                 }
                 $fileService->createConf(FileService::FILE_TYPE_BLOG,  $id . '.conf', $locale,  "[BLOG]\njson=" . json_encode($blog),$user, FileService::STATUS_ACTIVE, $id);
