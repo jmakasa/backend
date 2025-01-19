@@ -295,11 +295,11 @@ class BlogsController extends Controller
                 'lang',
                 'featured_blog',
                 DB::raw("CASE
-                WHEN btype =1 THEN 'Press Release'
-                WHEN btype =2 THEN 'Product Reviews'
-                WHEN btype =3 THEN 'Tech Trends'
-                WHEN btype =4 THEN 'Buying Guides'
-                WHEN btype =5 THEN 'Tips & Tutorials'
+                WHEN btype =1 THEN 'Company News'
+                WHEN btype =2 THEN 'Industry Insights'
+                WHEN btype =3 THEN 'Press Release'
+                WHEN btype =4 THEN 'Product Review'
+                WHEN btype =5 THEN 'Use Case'
                 END as btype")
             )->whereId($request->get("id"))->first();
 
@@ -347,7 +347,15 @@ class BlogsController extends Controller
                 // get featured blog
                 if ($blog['blog']['featured_blog']) {
                     $aryFeaturedBlog = explode(",", $blog['blog']['featured_blog']);
-                    $featuredBlog = Blogs::select('id', 'title', 'btype', 'releasedate', 'topimage')
+                    $featuredBlog = Blogs::select('id', 'title', 
+                    DB::raw("CASE
+                    WHEN btype =1 THEN 'Company News'
+                    WHEN btype =2 THEN 'Industry Insights'
+                    WHEN btype =3 THEN 'Press Release'
+                    WHEN btype =4 THEN 'Product Review'
+                    WHEN btype =5 THEN 'Use Case'
+                    END as btype"),
+                    'releasedate', 'topimage')
                         ->whereIn('id', $aryFeaturedBlog)->whereLang($locale)->get();
 
                     $blog['featured_blog'] = $featuredBlog->toArray();
