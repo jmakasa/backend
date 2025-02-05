@@ -20,6 +20,11 @@ class UploadFilesTasks extends Model
     const STATUS_DELETED  = "92";
     const STATUS_DELETE_FAILED = "93";
 
+    protected $casts = [
+        'created_at' => 'datetime:m-d-Y H:i:s',
+        'updated_at' => 'datetime:m-d-Y H:i:s',
+    ];
+
     protected $fillable = [
         'upload_files_id','hostname','launch_datetime','status','uploaded_at','created_by','created_at','updated_by','updated_at'
     ];
