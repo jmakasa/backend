@@ -156,15 +156,12 @@ class KeywordsController extends Controller
             foreach ($allSockets as $socket) {
                 $socketList[$socket] = false;
             }
-            Logger()->debug(" getSocketTypeByPartno : allSockets " . var_export($socketList, true));
 
             // get socket belong to partno
             $prodSockets = ProdKeywords::where("prod_keywords.partno", $request->get('partno'))
                 ->leftJoin('keyword_list as kl', 'kl.skey', '=', 'prod_keywords.skey')
                 ->whereIn("kl.type", [Keywords::TYPE_AMD, Keywords::TYPE_INTEL])
                 ->get()->toArray();
-            Logger()->debug(" getSocketTypeByPartno : prodSockets " . var_export($prodSockets, true));
-
 
             if ($prodSockets) {
                 foreach ($prodSockets as $ps) {

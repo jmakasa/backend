@@ -172,11 +172,11 @@ class FileService
         //     logger()->debug(" FileService - createConf : folder create " . var_export($destinationPath, true));
         //     mkdir($destinationPath, 0777, true);
         // }
-        logger()->debug(" FileService - createConf : DATA $destinationPath, $type, $filename, $lang ");
+        logger()->debug(" FileService - createConf : DATA $destinationPath, $type, $filename, $lang,$user,$status, $partno ");
         if ($path) {
             $user = ($user ? $user : 'system');
             $this->addUploadFile($destinationPath . $filename, $path . $filename, $type, $lang, 'ftp', $user, $status, 'akasa2206_uk', $partno);
-            logger()->debug(" FileService - PUT file $path . $filename ");
+            logger()->debug(" FileService - PUT file $path.$filename ");
             $filePath = Storage::disk($disk)->put($path . $filename, $json);
             return $filePath;
         } else {

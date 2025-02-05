@@ -586,6 +586,7 @@ class ProductsController extends Controller
     {
 
         if ($request->get('menucat')) {
+            $username = ($request->has('username') && $request->get('username') ? $request->get('username') : 'SYS');
             Logger()->debug("generateConfByMenucat : DONE  : " . var_export($request->get('menucat'), true));
             $boxes = ProdlistBoxes::where('menucat', strval(sprintf("%04d", $request->get('menucat'))))->get();
             $aryPartno = [];
@@ -593,7 +594,7 @@ class ProductsController extends Controller
             foreach ($boxes as $box) {
                 $jsonProduct = $this->showOne($locale, $box->productcode);
                 $aryPartno[] = $box->productcode;
-                $result = $fileService->createConf('product', $box->productcode . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct));
+                $result = $fileService->createConf('product', $box->productcode . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $username, Products::STATUS_ONE, $box->productcode);
             }
             Logger()->debug("generateConfByMenucat : DONE  : " . var_export($aryPartno, true));
             return response()->json(['result' => $result]);
@@ -608,22 +609,24 @@ class ProductsController extends Controller
     public function generateSingleConf($locale, Request $request, FileService $fileService)
     {
         $result = false;
+        $username = ($request->has('username') && $request->get('username') ? $request->get('username') : 'SYS');
+        Logger()->debug("generateSingleConf : request : " . var_export($request->all(), true));
         if ($request->has('batch') && $request->has('partnos')) {
             Logger()->debug("generateSingleConf : batch :  result : " . var_export($request->all(), true));
             $aryPartno = explode(",", $request->get('partnos'));
             foreach ($aryPartno as $partno) {
                 $jsonProduct = $this->showOne($locale, $partno);
-                $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $partno);
-                $this->exportFilesToWeb($locale, $partno);
+                $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $username, Products::STATUS_ONE, $partno);
+                $this->exportFilesToWeb($locale, $partno, $username);
             }
         } else {
             $partno = $request->get('partno');
             $jsonProduct = $this->showOne($locale, $partno);
 
-            $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $partno);
+            $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $username, Products::STATUS_ONE, $partno);
             Logger()->debug("generateSingleConf : partno : " . $partno . ", result : " . var_export($result, true));
 
-            $this->exportFilesToWeb($locale, $partno);
+            $this->exportFilesToWeb($locale, $partno, $username);
         }
 
         return response()->json(['result' => $result]);
@@ -635,19 +638,21 @@ class ProductsController extends Controller
     public function generateConfOnly($locale, Request $request, FileService $fileService)
     {
         $result = false;
+        $username = ($request->has('username') && $request->get('username') ? $request->get('username') : 'SYS');
+        Logger()->debug("generateSingleConf : request : " . var_export($request->all(), true));
         if ($request->has('batch') && $request->has('partnos')) {
             Logger()->debug("generateSingleConf : batch :  result : " . var_export($request->all(), true));
             $aryPartno = explode(",", $request->get('partnos'));
             foreach ($aryPartno as $partno) {
                 $jsonProduct = $this->showOne($locale, $partno);
-                $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $partno);
+                $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $username, Products::STATUS_ONE, $partno);
                 //  $this->exportFilesToWeb($locale, $partno);
             }
         } else {
             $partno = $request->get('partno');
             $jsonProduct = $this->showOne($locale, $partno);
 
-            $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $partno);
+            $result = $fileService->createConf('product', $partno . '.conf', $locale,  "[product]\ndetails=" . json_encode($jsonProduct), $username, Products::STATUS_ONE, $partno);
             Logger()->debug("generateSingleConf : partno : " . $partno . ", result : " . var_export($result, true));
 
             //   $this->exportFilesToWeb($locale, $partno);
@@ -659,7 +664,7 @@ class ProductsController extends Controller
     /***
      * export image or file to web
      */
-    public function exportFilesToWeb($locale, $partno)
+    public function exportFilesToWeb($locale, $partno,$username='system')
     {
         $fileService = new FileService;
         // export files
@@ -669,7 +674,7 @@ class ProductsController extends Controller
         $images = Images::where('partno', $partno)->get();
         foreach ($images as $image) {
             if ($image->docname) {
-                $fileService->exportFiles($image->ctype, $image->docname, $image->partno, $locale);
+                $fileService->exportFiles($image->ctype, $image->docname, $image->partno, $locale,$username);
             }
         }
         //
@@ -681,7 +686,7 @@ class ProductsController extends Controller
             // review image
             if ($review->reviewsites_id) {
                 $reviewsite = Reviewsites::whereId($review->reviewsites_id)->first();
-                $fileService->exportFiles(FileService::FILE_TYPE_REVIEWSITELOGO, $reviewsite->sitelogo, $partno, $locale);
+                $fileService->exportFiles(FileService::FILE_TYPE_REVIEWSITELOGO, $reviewsite->sitelogo, $partno, $locale,$username);
             }
         }
         //
@@ -692,7 +697,7 @@ class ProductsController extends Controller
         $downloads = Downloads::where('partno', $partno)->get();
         foreach ($downloads as $dl) {
             if ($dl->docname) {
-                $fileService->exportFiles($dl->ftype, $dl->docname, $dl->partno, $locale);
+                $fileService->exportFiles($dl->ftype, $dl->docname, $dl->partno, $locale,$username);
             }
         }
         //
@@ -701,7 +706,7 @@ class ProductsController extends Controller
         $eurls = ProductEcommerceUrls::where('productcode', $partno)->where("status", "Active")->get();
         foreach ($eurls as $url) {
             if ($url->imglogo) {
-                $fileService->exportFiles(FileService::FILE_TYPE_ECOMMERCE_URLS_LOGO, $url->imglogo, $partno, $locale);
+                $fileService->exportFiles(FileService::FILE_TYPE_ECOMMERCE_URLS_LOGO, $url->imglogo, $partno, $locale,$username);
             }
         }
     }
@@ -893,14 +898,15 @@ class ProductsController extends Controller
         // set_time_limit(6000);
         $num = 50;
         $cnt = 1;
+        $username = 'system';
         $allProduct = Products::select('partno', 'exported')->where("lang", '=', $locale)->where('exported', '=', 0)->limit($num)->get();
         Logger()->debug(" generateAllConf $locale , Number : $num, count:" . $allProduct->count());
         foreach ($allProduct as $product) {
             $cnt++;
 
             $jsonProduct = $this->showOne($locale, $product->partno);
-            $fileService->createConf('product', $product->partno . '.conf', $locale,   "[product]\ndetails=" . json_encode($jsonProduct));
-            $this->exportFilesToWeb($locale, $product->partno);
+            $fileService->createConf('product', $product->partno . '.conf', $locale,   "[product]\ndetails=" . json_encode($jsonProduct),$username, Products::STATUS_ONE,$product->partno);
+            $this->exportFilesToWeb($locale, $product->partno,$username);
             Products::where('partno', $product->partno)->where("lang", '=', $locale)
                 ->update(['exported' => 1]);
         }
@@ -911,13 +917,14 @@ class ProductsController extends Controller
     {
         // ini_set('max_execution_time', 6000);
         // set_time_limit(6000);
+        $username = 'system';
         $cnt = 1;
         $allProduct = Products::select('partno', 'exported')->where("lang", '=', $locale)->where('exported', '=', 0)->limit(20)->get();
         foreach ($allProduct as $product) {
             $cnt++;
 
             $jsonProduct = $this->showOne($locale, $product->partno);
-            $fileService->createConf('product', $product->partno . '.conf', $locale,   "[product]\ndetails=" . json_encode($jsonProduct));
+            $fileService->createConf('product', $product->partno . '.conf', $locale,   "[product]\ndetails=" . json_encode($jsonProduct), $username,Products::STATUS_ONE, $product->partno);
             Products::where('partno', $product->partno)->where("lang", '=', $locale)
                 ->update(['exported' => 1]);
 
@@ -928,7 +935,7 @@ class ProductsController extends Controller
             $images = Images::where('partno', $product->partno)->get();
             foreach ($images as $image) {
                 if ($image->docname) {
-                    $fileService->exportFiles($image->ctype, $image->docname, $image->partno, $locale);
+                    $fileService->exportFiles($image->ctype, $image->docname, $image->partno, $locale, $username);
                 }
             }
 
@@ -938,7 +945,7 @@ class ProductsController extends Controller
             $downloads = Downloads::where('partno', $product->partno)->get();
             foreach ($downloads as $dl) {
                 if ($dl->docname) {
-                    $fileService->exportFiles($dl->ftype, $dl->docname, $dl->partno, $locale);
+                    $fileService->exportFiles($dl->ftype, $dl->docname, $dl->partno, $locale, $username);
                 }
             }
         }

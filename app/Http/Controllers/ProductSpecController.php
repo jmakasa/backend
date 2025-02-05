@@ -201,11 +201,10 @@ class ProductSpecController extends Controller
 
             $data = ProdSpec::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
             $data818 = ProdSpec818::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
-
-            Logger()->debug(" updateSpec : data " . var_export($data->id, true));
-            Logger()->debug(" updateSpec : data818 " . var_export($data818->id, true));
             
             if ($data && $data818) {
+                Logger()->debug(" updateSpec : data " . var_export($data->id, true));
+                Logger()->debug(" updateSpec : data818 " . var_export($data818->id, true));
                 $data->group_id = $request->get('group_id');
                 $data->specgroup = $request->get('group_name');
                 $data->specname = $request->get('specname');
