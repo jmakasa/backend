@@ -13,6 +13,11 @@ class UploadFiles extends Model
 
     const ETYPE_PROD = 'product';
 
+    protected $casts = [
+        'created_at' => 'datetime:m-d-Y H:i:s',
+        'updated_at' => 'datetime:m-d-Y H:i:s',
+    ];
+
     protected $fillable = [
         'hostname','local_file','remote_file','filename','etype','lang','method','status','partno','created_by','created_at','updated_by','updated_at'];
 
