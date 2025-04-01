@@ -52,19 +52,33 @@ class ProductSpecController extends Controller
             $group->group_name_json = $aryName;
             $group->group_name = $request->get('group_name_en');
 
-            $group818 = (new ProdSpecGroups818)
-                ->validateAndFill($request->all())
-                ->setAttribute('status', 1);
+            // $group818 = (new ProdSpecGroups818)
+            //     ->validateAndFill($request->all())
+            //     ->setAttribute('status', 1);
 
-            $aryName['en'] = $request->get('group_name_en');
-            $aryName['cn'] = $request->get('group_name_cn');
-            $group818->group_name_json = $aryName;
-            $group818->group_name = $request->get('group_name_en');
+            // $aryName['en'] = $request->get('group_name_en');
+            // $aryName['cn'] = $request->get('group_name_cn');
+            // $group818->group_name_json = $aryName;
+            // $group818->group_name = $request->get('group_name_en');
 
-            
+            //if ($group->save() && $group818->save()) {
+            if ($group->save()){
 
-
-            if ($group->save() && $group818->save()) {
+                // check 818
+                $data818 = ProdSpecGroups818::whereLang($locale)->whereId($group->id)->first();
+                if (!$data818) {
+                    $data818 = $group->replicate();
+                    $data818->setConnection('mysql_818'); 
+                    $data818->setTable('akasaweb2021.prod_spec_groups');
+                    $data818->id = $group->id;
+                    if ($data818->save()) {
+                        logger()->debug(" add to 818  : done" . var_export($data818, true));
+                       // return true;
+                    } else {
+                        logger()->error(" FAILED add to 818 $data->id");
+                        //return false;
+                    }
+                } 
                 return response()->json(['result' => true, 'data' => $group]);
             } else {
                 return response()->json(['result' => false]);
@@ -163,8 +177,8 @@ class ProductSpecController extends Controller
             $data = ProdSpec::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
             $data->is_highlight = $request->get('is_highlight');
 
-            $data818 = ProdSpec818::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
-            $data818->is_highlight = $request->get('is_highlight');
+            // $data818 = ProdSpec818::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
+            // $data818->is_highlight = $request->get('is_highlight');
             // log history if has been changed
             if ($data->isDirty()) {
                 foreach ($data->getDirty() as $key => $value) {
@@ -172,7 +186,8 @@ class ProductSpecController extends Controller
                 }
             }
 
-            if ($data->save() && $data818->save()) {
+           // if ($data->save() && $data818->save()) {
+            if ($data->save() ) {
                 return response()->json($data);
             } else {
                 // TODO:: return and said no this partno
@@ -200,11 +215,12 @@ class ProductSpecController extends Controller
             Logger()->debug(" updateSpec : request " . var_export($request->all(), true));
 
             $data = ProdSpec::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
-            $data818 = ProdSpec818::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
+           // $data818 = ProdSpec818::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
             
-            if ($data && $data818) {
+         //   if ($data && $data818) {
+            if ($data) {
                 Logger()->debug(" updateSpec : data " . var_export($data->id, true));
-                Logger()->debug(" updateSpec : data818 " . var_export($data818->id, true));
+         //       Logger()->debug(" updateSpec : data818 " . var_export($data818->id, true));
                 $data->group_id = $request->get('group_id');
                 $data->specgroup = $request->get('group_name');
                 $data->specname = $request->get('specname');
@@ -213,13 +229,7 @@ class ProductSpecController extends Controller
                 $data->updated_by = $request->get('username');
                 $data->seqno = $request->get('seqno');
                 // $data818
-                $data818->group_id = $request->get('group_id');
-                $data818->specgroup = $request->get('group_name');
-                $data818->specname = $request->get('specname');
-                $data818->specdesc = $request->get('specdesc');
-                $data818->is_highlight = $request->get('is_highlight');
-                $data818->updated_by = $request->get('username');
-                $data818->seqno = $request->get('seqno');
+
 
                 // log history if has been changed
                 if ($data->isDirty()) {
@@ -228,7 +238,38 @@ class ProductSpecController extends Controller
                     }
                 }
 
-                if ($data->save() && $data818->save()) {
+                //if ($data->save() && $data818->save()) {
+                if ($data->save()) {
+                    Logger()->debug(" updateSpec : data save " . var_export($data, true));
+
+                    // save copy to 818
+                    // check 818
+                    $data818 = ProdSpec818::whereLang($locale)->where("partno", $request->get('partno'))->whereId($request->get('id'))->first();
+                    if (!$data818) {
+                        $data818 = $data->replicate();
+                        $data818->setConnection('mysql_818'); 
+                        $data818->setTable('akasaweb2021.prod_spec');
+                        $data818->id = $data->id;
+                    } else {
+
+                        $data818->group_id = $request->get('group_id');
+                        $data818->specgroup = $request->get('group_name');
+                        $data818->specname = $request->get('specname');
+                        $data818->specdesc = $request->get('specdesc');
+                        $data818->is_highlight = $request->get('is_highlight');
+                        $data818->updated_by = $request->get('username');
+                        $data818->seqno = $request->get('seqno');
+                    }
+
+                    if ($data818->save()) {
+                        logger()->debug(" add to 818  : done" . var_export($data818, true));
+                       // return true;
+                    } else {
+                        logger()->error(" FAILED add to 818 $data->id");
+                        //return false;
+                    }
+
+
                     return response()->json($data);
                 } else {
                     // TODO:: return and said no this partno

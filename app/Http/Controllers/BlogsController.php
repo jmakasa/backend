@@ -47,6 +47,7 @@ class BlogsController extends Controller
         'topimage',
         'seqno',
         'lang',
+        'slug',
         'status',)->where('lang', $locale)->orderBy($sort, $order)->orderBy('releasedate', 'desc');
         
 
@@ -376,12 +377,12 @@ class BlogsController extends Controller
 
                 if ($index !== false && $index > 0) {
                     $prevId = $blogIds[$index - 1];
-                    $prevBlog = Blogs::select('id', 'title')->whereId($prevId)->first();
+                    $prevBlog = Blogs::select('id', 'title','slug')->whereId($prevId)->first();
                     $blog['prev'] = $prevBlog->toArray();
                 }
                 if ($index !== false && $index < count($blogIds) - 1) {
                     $nextId = $blogIds[$index + 1];
-                    $nextBlog = Blogs::select('id', 'title')->whereId($nextId)->first();
+                    $nextBlog = Blogs::select('id', 'title','slug')->whereId($nextId)->first();
                     $blog['next'] = $nextBlog->toArray();
                 }
 
